@@ -11,11 +11,9 @@
       padding: 20px;
       margin: 0;
     }
-    h1 {
+    h1, h2 {
       text-align: center;
       color: #00796b;
-      font-size: 2.5rem;
-      margin-bottom: 30px;
     }
     .question {
       background: #ffffff;
@@ -71,83 +69,129 @@
       line-height: 24px;
       transition: width 0.5s;
     }
+    .nav-buttons {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .nav-buttons button {
+      background-color: #00796b;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
   </style>
 </head>
 <body>
   <h1>📘 WGU: D089 Principles of Economics OA Exam Quiz 📘</h1>
   <div id="quiz"></div>
+  <div class="nav-buttons">
+    <button id="prevBtn" onclick="changeSection(-1)" style="display:none;">Previous</button>
+    <button id="nextBtn" onclick="changeSection(1)">Next</button>
+  </div>
   <div class="progress-container">
-    <p>Score: <span id="score">0</span>/250 (<span id="percent">0</span>%)</p>
+    <p>Section Score: <span id="score">0</span>/50 | Total: <span id="total">0</span>/250</p>
     <div class="progress-bar">
       <div class="progress-fill" id="progress-fill"></div>
     </div>
   </div>
-
   <script>
-    const quizData = fetch('quiz-data.json')
+    let quizData = [];
+    let currentSection = 0;
+    let sectionScores = [0, 0, 0, 0, 0];
+    fetch('quiz-data.json')
       .then(response => response.json())
-      .then(data => initializeQuiz(data))
-      .catch(error => console.error('Error loading quiz data:', error));
-
-    function initializeQuiz(quizData) {
+      .then(data => {
+        quizData = shuffle(data);
+        initializeSection();
+      });
+    function shuffle(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+    function initializeSection() {
       const quizContainer = document.getElementById("quiz");
-      let score = 0;
-
-      quizData.forEach((q, idx) => {
+      quizContainer.innerHTML = "";
+      const start = currentSection * 50;
+      const end = start + 50;
+      const sectionData = quizData.slice(start, end);
+      sectionData.forEach((q, idx) => {
         const questionDiv = document.createElement("div");
         questionDiv.className = "question";
-
         const questionText = document.createElement("p");
-        questionText.innerHTML = `<strong>Q${idx + 1}:</strong> ${q.question}`;
+        questionText.innerHTML = `<strong>Q${start + idx + 1}:</strong> ${q.question}`;
         questionDiv.appendChild(questionText);
-
         const choicesDiv = document.createElement("div");
         choicesDiv.className = "choices";
-
         q.choices.forEach((choice, choiceIdx) => {
           const label = document.createElement("label");
           const input = document.createElement("input");
           input.type = "radio";
-          input.name = `question${idx}`;
-          input.value = choiceIdx;
-          input.style.marginRight = "10px";
-          input.onclick = () => handleAnswer(idx, choiceIdx, q.correct, q.explanation);
+          input.name = `question${start + idx}`;
+          input.value = choice;
+          input.onclick = () => handleAnswer(start + idx, choice, q.correct, q.explanation);
           label.appendChild(input);
           label.append(` ${choice}`);
           choicesDiv.appendChild(label);
         });
-
         const feedback = document.createElement("div");
         feedback.className = "feedback";
-        feedback.id = `feedback${idx}`;
-
+        feedback.id = `feedback${start + idx}`;
         questionDiv.appendChild(choicesDiv);
         questionDiv.appendChild(feedback);
         quizContainer.appendChild(questionDiv);
       });
-
-      function handleAnswer(qIndex, selected, correctAnswerText, explanation) {
-        const feedback = document.getElementById(`feedback${qIndex}`);
-        if (feedback.innerHTML !== "") return;
-
-        const selectedLabel = document.querySelector(`input[name='question${qIndex}']:checked`).parentNode.textContent.trim();
-
-        if (selectedLabel === correctAnswerText) {
-          score++;
-          feedback.innerHTML = `✅ Correct! 🎉 ${explanation}`;
-          feedback.style.color = "green";
-        } else {
-          feedback.innerHTML = `❌ Incorrect. Correct Answer: ${correctAnswerText}<br>${explanation}`;
-          feedback.style.color = "red";
-        }
-
-        document.getElementById("score").innerText = score;
-        const percent = Math.round((score / quizData.length) * 100);
-        document.getElementById("percent").innerText = percent;
-        const progressFill = document.getElementById("progress-fill");
-        progressFill.style.width = percent + "%";
-        progressFill.innerText = percent + "%";
+      document.getElementById("prevBtn").style.display = currentSection > 0 ? "inline-block" : "none";
+      document.getElementById("nextBtn").innerText = currentSection < 4 ? "Next" : "Finish";
+      updateScore();
+    }
+    function handleAnswer(qIndex, selectedText, correctAnswerText, explanation) {
+      const feedback = document.getElementById(`feedback${qIndex}`);
+      if (feedback.innerHTML !== "") return;
+      const section = Math.floor(qIndex / 50);
+      if (selectedText === correctAnswerText) {
+        sectionScores[section]++;
+        feedback.innerHTML = `✅ Correct! 🎉 ${explanation}`;
+        feedback.style.color = "green";
+      } else {
+        feedback.innerHTML = `❌ Incorrect. Correct Answer: ${correctAnswerText}<br>${explanation}`;
+        feedback.style.color = "red";
       }
+      updateScore();
+    }
+    function updateScore() {
+      const current = sectionScores[currentSection];
+      const total = sectionScores.reduce((a, b) => a + b, 0);
+      document.getElementById("score").innerText = current;
+      document.getElementById("total").innerText = total;
+      const percent = Math.round((total / quizData.length) * 100);
+      const progressFill = document.getElementById("progress-fill");
+      progressFill.style.width = percent + "%";
+      progressFill.innerText = percent + "%";
+    }
+    function changeSection(direction) {
+      if (direction === 1 && currentSection === 4) {
+        showFinalScore();
+        return;
+      }
+      currentSection += direction;
+      initializeSection();
+    }
+    function showFinalScore() {
+      const quizContainer = document.getElementById("quiz");
+      quizContainer.innerHTML = `<h2>🎓 Final Results</h2>`;
+      let total = 0;
+      sectionScores.forEach((score, idx) => {
+        total += score;
+        const p = document.createElement("p");
+        p.innerText = `Section ${idx + 1}: ${score}/50`;
+        quizContainer.appendChild(p);
+      });
+      const totalP = document.createElement("p");
+      totalP.innerHTML = `<strong>Total Score: ${total}/250</strong>`;
+      quizContainer.appendChild(totalP);
+      document.querySelector(".nav-buttons").style.display = "none";
     }
   </script>
 </body>
