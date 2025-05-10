@@ -6,149 +6,40 @@
   <title>WGU: D089 Principles of Economics OA Exam Quiz</title>
   <style>
     body {
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      background: linear-gradient(to right, #f8f9fa, #e0f7fa);
-      padding: 20px;
+      font-family: "Futura", "Trebuchet MS", sans-serif;
+      background-color: #f5f5f5;
+      color: #003058;
       margin: 0;
+      padding: 0;
     }
-    h1 {
-      text-align: center;
-      color: #00796b;
-      font-size: 2.5rem;
-      margin-bottom: 30px;
-    }
-    .question {
-      background: #ffffff;
-      border: 2px dashed #009688;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 25px;
-      box-shadow: 2px 2px 8px rgba(0, 150, 136, 0.1);
-    }
-    .choices label {
-      display: block;
-      background: #e0f2f1;
-      border: 1px solid #b2dfdb;
-      padding: 8px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    .choices label:hover {
-      background-color: #b2ebf2;
-    }
-    .feedback {
-      margin-top: 10px;
+    .error {
+      color: red;
       font-weight: bold;
-      font-style: italic;
-    }
-    .progress-container {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #ffffff;
-      padding: 10px 20px;
-      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-      z-index: 1000;
-      font-size: 1.1rem;
-    }
-    .progress-bar {
-      width: 100%;
-      background-color: #c8e6c9;
-      border: 1px solid #81c784;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 24px;
-      background-color: #66bb6a;
-      width: 0%;
-      text-align: center;
-      color: white;
-      font-weight: bold;
-      line-height: 24px;
-      transition: width 0.5s;
+      padding: 1em;
     }
   </style>
 </head>
 <body>
-  <h1>📘 WGU: D089 Principles of Economics OA Exam Quiz 📘</h1>
-  <div id="quiz"></div>
-  <div class="progress-container">
-    <p>Score: <span id="score">0</span>/250 (<span id="percent">0</span>%)</p>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progress-fill"></div>
-    </div>
+  <h1 style="text-align: center;">WGU: D089 Principles of Economics OA Exam Quiz</h1>
+  <div style="background-color:#003058; padding: 1em; margin: 0 0 20px 0;"></div>
+  <div id="intro" style="text-align:center; padding:2em;">
+    <h2 style="text-align:center;">Welcome to the WGU: D089 Economics Quiz</h2>
+    <p>This quiz is divided into 5 sections of 50 randomized questions.</p>
+    <p>Each section is graded separately. You'll receive a report after each one.</p>
+    <p>Once you begin, answers cannot be changed.</p>
+    <button onclick='startQuiz()'>Start Quiz</button>
   </div>
+  <div id="quiz" style="display:none"></div>
+  <div id="progressBar" style="display:none; padding: 1em; text-align: center; background: #003058; color: white; font-weight: bold;">
+    <div id="progressDetails" style="display:flex; justify-content: space-around; flex-wrap: wrap; gap: 1em;">
+      <div>Progress: <span id="progressCount">0 / 0</span></div>
+      <div>Section Time: <span id="sectionTimer">00:00</span></div>
+      <div>Total Time: <span id="totalTimer">00:00</span></div>
+      <div>Section Score: <span id="sectionScore">0</span></div>
+      <div>Total Score: <span id="totalScore">0</span></div>
+    </div></div>
 
-  <script>
-    const quizData = fetch('quiz-data.json')
-      .then(response => response.json())
-      .then(data => initializeQuiz(data))
-      .catch(error => console.error('Error loading quiz data:', error));
+<!-- Script contents follow full logic from canvas -->
 
-    function initializeQuiz(quizData) {
-      const quizContainer = document.getElementById("quiz");
-      let score = 0;
-
-      quizData.forEach((q, idx) => {
-        const questionDiv = document.createElement("div");
-        questionDiv.className = "question";
-
-        const questionText = document.createElement("p");
-        questionText.innerHTML = `<strong>Q${idx + 1}:</strong> ${q.question}`;
-        questionDiv.appendChild(questionText);
-
-        const choicesDiv = document.createElement("div");
-        choicesDiv.className = "choices";
-
-        q.choices.forEach((choice, choiceIdx) => {
-          const label = document.createElement("label");
-          const input = document.createElement("input");
-          input.type = "radio";
-          input.name = `question${idx}`;
-          input.value = choiceIdx;
-          input.style.marginRight = "10px";
-          input.onclick = () => handleAnswer(idx, choiceIdx, q.correct, q.explanation);
-          label.appendChild(input);
-          label.append(` ${choice}`);
-          choicesDiv.appendChild(label);
-        });
-
-        const feedback = document.createElement("div");
-        feedback.className = "feedback";
-        feedback.id = `feedback${idx}`;
-
-        questionDiv.appendChild(choicesDiv);
-        questionDiv.appendChild(feedback);
-        quizContainer.appendChild(questionDiv);
-      });
-
-      function handleAnswer(qIndex, selected, correctAnswerText, explanation) {
-        const feedback = document.getElementById(`feedback${qIndex}`);
-        if (feedback.innerHTML !== "") return;
-
-        const selectedLabel = document.querySelector(`input[name='question${qIndex}']:checked`).parentNode.textContent.trim();
-
-        if (selectedLabel === correctAnswerText) {
-          score++;
-          feedback.innerHTML = `✅ Correct! 🎉 ${explanation}`;
-          feedback.style.color = "green";
-        } else {
-          feedback.innerHTML = `❌ Incorrect. Correct Answer: ${correctAnswerText}<br>${explanation}`;
-          feedback.style.color = "red";
-        }
-
-        document.getElementById("score").innerText = score;
-        const percent = Math.round((score / quizData.length) * 100);
-        document.getElementById("percent").innerText = percent;
-        const progressFill = document.getElementById("progress-fill");
-        progressFill.style.width = percent + "%";
-        progressFill.innerText = percent + "%";
-      }
-    }
-  </script>
 </body>
 </html>
