@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,10 +38,71 @@
       <div>Total Time: <span id="totalTimer">00:00</span></div>
       <div>Section Score: <span id="sectionScore">0</span></div>
       <div>Total Score: <span id="totalScore">0</span></div>
-    </div></div>
+    </div>
+  </div>
+  <script>
+    let quizData = [];
 
-<script>
-// script preserved from current canvas
-</script>
+    async function loadQuiz() {
+      const quizEl = document.getElementById("quiz");
+      try {
+        const res = await fetch("quiz-data.json");
+        if (!res.ok) throw new Error(`Failed to fetch quiz-data.json: HTTP ${res.status}`);
+        quizData = await res.json();
+      } catch (err) {
+        quizEl.innerHTML = `<div class="error">❌ Error loading quiz: ${err.message}</div>`;
+        console.error("Quiz data load error:", err);
+      }
+    }
+
+    loadQuiz();
+
+    function startQuiz() {
+      const quizEl = document.getElementById("quiz");
+      document.getElementById("intro").style.display = "none";
+      quizEl.style.display = "block";
+      document.getElementById("progressBar").style.display = "block";
+
+      if (!quizData.length) {
+        quizEl.innerHTML = `<div class='error'>❌ Quiz data failed to load. Please ensure quiz-data.json is present and valid.</div>`;
+        return;
+      }
+
+      let currentSection = 0;
+      renderSection(currentSection);
+    }
+
+    function renderSection(sectionIndex) {
+      const quizEl = document.getElementById("quiz");
+      const sectionSize = 50;
+      const sectionData = quizData.slice(sectionIndex * sectionSize, (sectionIndex + 1) * sectionSize);
+
+      quizEl.innerHTML = `<h2>Section ${sectionIndex + 1}</h2>
+        <form id='sectionForm'>
+          ${sectionData.map((q, i) => `
+            <div style='margin-bottom: 1.5em; padding: 1em; border: 1px solid #ccc; border-radius: 6px; background: #fff;'>
+              <strong>Q${i + 1}:</strong> ${q.question}<br>
+              ${q.choices.map((choice, j) => `
+                <label style='display: block; margin: 0.5em 0;'>
+                  <input type='radio' name='q${i}' value='${String.fromCharCode(97 + j)}'> ${choice}
+                </label>
+              `).join('')}
+            </div>
+          `).join('')}
+          <div style='text-align: center; margin-top: 2em;'>
+            <button type='button' onclick='changeSection(${sectionIndex - 1})' ${sectionIndex === 0 ? 'disabled' : ''}>Previous</button>
+            <button type='button' onclick='changeSection(${sectionIndex + 1})' ${((sectionIndex + 1) * 50 >= quizData.length) ? 'disabled' : ''}>Next</button>
+            <button type='button' onclick='window.scrollTo({top: 0, behavior: "smooth"})'>Back to Top</button>
+          </div>
+        </form>`;
+    }
+
+    function changeSection(index) {
+      const totalSections = Math.ceil(quizData.length / 50);
+      if (index >= 0 && index < totalSections) {
+        renderSection(index);
+      }
+    }
+  </script>
 </body>
 </html>
