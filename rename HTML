@@ -1,0 +1,3 @@
+git mv WGU_D089_Economics_Quiz.html index.html
+git commit -m "Rename quiz file to index.html for GitHub Pages"
+git push
