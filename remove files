@@ -1,0 +1,8 @@
+# 1. Remove all tracked files
+git rm -r *
+
+# 2. Commit the change
+git commit -m "Remove all files from repo"
+
+# 3. Push to the remote repository
+git push origin main
