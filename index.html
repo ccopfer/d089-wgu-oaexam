@@ -126,16 +126,18 @@
         quizContainer.appendChild(questionDiv);
       });
 
-      function handleAnswer(qIndex, selected, correctAnswer, explanation) {
+      function handleAnswer(qIndex, selected, correctAnswerText, explanation) {
         const feedback = document.getElementById(`feedback${qIndex}`);
         if (feedback.innerHTML !== "") return;
 
-        if (selected === correctAnswer) {
+        const selectedLabel = document.querySelector(`input[name='question${qIndex}']:checked`).parentNode.textContent.trim();
+
+        if (selectedLabel === correctAnswerText) {
           score++;
           feedback.innerHTML = `✅ Correct! 🎉 ${explanation}`;
           feedback.style.color = "green";
         } else {
-          feedback.innerHTML = `❌ Incorrect. Correct Answer: ${correctAnswer}<br>${explanation}`;
+          feedback.innerHTML = `❌ Incorrect. Correct Answer: ${correctAnswerText}<br>${explanation}`;
           feedback.style.color = "red";
         }
 
