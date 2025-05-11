@@ -32,11 +32,12 @@
   <div id="quiz" style="display:none"></div>
   <div id="progressBar" style="display:none; position: fixed; bottom: 0; width: 100%; padding: 1em; text-align: center; background: #003058; color: white; font-weight: bold; z-index: 1000;">
     <div id="progressDetails" style="display:flex; justify-content: space-around; flex-wrap: wrap; gap: 1em;">
-      <div>Progress: <span id="progressCount">0 / 0</span></div>
+      <div>Section Points: <span id="sectionPoints">0 / 50</span></div>
+      <div>Total Points: <span id="totalPoints">0 / 250</span></div>
       <div>Section Time: <span id="sectionTimer">00:00</span></div>
       <div>Total Time: <span id="totalTimer">00:00</span></div>
-      <div>Section Score: <span id="sectionScore">0</span></div>
-      <div>Total Score: <span id="totalScore">0</span></div>
+      <div>Section Score: <span id="sectionScore">100%</span></div>
+      <div>Total Score: <span id="totalScore">100%</span></div>
     </div>
   </div>
   <script>
@@ -64,6 +65,14 @@
       return array;
     }
 
+    let totalCorrect = 0;
+    let sectionCorrect = 0;
+    let currentSection = 0;
+
+    let sectionTime = 0;
+    let totalTime = 0;
+    let sectionTimer, totalTimer;
+
     function startQuiz() {
       const quizEl = document.getElementById("quiz");
       document.getElementById("intro").style.display = "none";
@@ -75,11 +84,26 @@
         return;
       }
 
-      let currentSection = 0;
+      currentSection = 0;
+      sectionTime = 0;
+      totalTime = 0;
+      updateTimers();
+      clearInterval(sectionTimer);
+      clearInterval(totalTimer);
+      sectionTimer = setInterval(() => {
+        sectionTime++;
+        document.getElementById("sectionTimer").textContent = formatTime(sectionTime);
+      }, 1000);
+      totalTimer = setInterval(() => {
+        totalTime++;
+        document.getElementById("totalTimer").textContent = formatTime(totalTime);
+      }, 1000);
       renderSection(currentSection);
     }
 
     function renderSection(sectionIndex) {
+      sectionCorrect = 0;
+      updateProgressBar();
       document.getElementById("progressBar").style.display = "block";
       const quizEl = document.getElementById("quiz");
       const sectionSize = 50;
@@ -107,11 +131,18 @@
     }
 
     function lockAndShowFeedback(input, questionIndex, correctAnswer, explanation) {
+      const wasAnswered = [...document.getElementsByName('q' + questionIndex)].some(r => r.disabled);
+      if (wasAnswered) return;
       const radios = document.getElementsByName('q' + questionIndex);
       radios.forEach(r => r.disabled = true);
 
       const selected = input.value;
       const isCorrect = selected === correctAnswer;
+      if (isCorrect) {
+        sectionCorrect++;
+        totalCorrect++;
+      }
+      updateProgressBar();
       const feedbackDiv = document.getElementById('feedback-' + questionIndex);
 
       feedbackDiv.innerHTML = `<div style='margin-top: 0.5em; padding: 0.5em; background: ${isCorrect ? "#e6ffe6" : "#ffe6e6"}; border: 1px solid #ccc;'>
@@ -125,6 +156,19 @@
       if (index >= 0 && index < totalSections) {
         renderSection(index);
       }
+    }
+
+    function updateProgressBar() {
+      document.getElementById("sectionPoints").textContent = `${sectionCorrect} / 50`;
+      document.getElementById("totalPoints").textContent = `${totalCorrect} / 250`;
+      document.getElementById("sectionScore").textContent = `${Math.round((sectionCorrect / 50) * 100)}%`;
+      document.getElementById("totalScore").textContent = `${Math.round((totalCorrect / 250) * 100)}%`;
+    }
+
+    function formatTime(seconds) {
+      const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const s = String(seconds % 60).padStart(2, '0');
+      return `${m}:${s}`;
     }
   </script>
 </body>
