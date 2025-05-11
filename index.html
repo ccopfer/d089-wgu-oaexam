@@ -104,6 +104,7 @@
   </div>
 
   <div id="section-review" style="display:none; padding: 20px;"></div>
+  <div id="final-review" style="display:none; padding: 20px;"></div>
   <div id="quiz" style="display:none;"></div>
   <div id="bottom-ui" style="display:none;">
   <div class="progress-container">
@@ -121,6 +122,53 @@
 <script>
 let quizData = [];
 document.addEventListener("DOMContentLoaded", () => {
+
+  function showFinalReview() {
+    const reviewContainer = document.getElementById("final-review");
+    reviewContainer.innerHTML = `<h2>Final Exam Review</h2>`;
+    let finalScore = 0;
+
+    quizData.forEach((q, i) => {
+      const selectedInput = document.querySelector(`input[name='question${i}']:checked`);
+      const selected = selectedInput ? q.choices[selectedInput.value] : "No answer selected";
+      const isCorrect = selected === q.correct;
+      if (isCorrect) finalScore++;
+
+      const reviewBlock = document.createElement("div");
+      reviewBlock.className = "question";
+      reviewBlock.innerHTML = `
+        <p><strong>Q${i + 1}:</strong> ${q.question}</p>
+        <p><strong>Your Answer:</strong> ${selected}</p>
+        <p><strong>Correct Answer:</strong> ${q.correct}</p>
+        <p><strong>Explanation:</strong> ${q.explanation}</p>
+        <hr>`;
+      reviewContainer.appendChild(reviewBlock);
+    });
+
+    const totalScoreDisplay = document.createElement("p");
+    totalScoreDisplay.innerHTML = `<strong>Final Score:</strong> ${finalScore} / 250`;
+    reviewContainer.appendChild(totalScoreDisplay);
+
+    const printBtn = document.createElement("button");
+    printBtn.innerText = "Print Review";
+    printBtn.style.marginRight = "10px";
+    printBtn.style.padding = "10px 20px";
+    printBtn.style.backgroundColor = "#003058";
+    printBtn.style.color = "white";
+    printBtn.style.border = "none";
+    printBtn.style.borderRadius = "6px";
+    printBtn.style.cursor = "pointer";
+    printBtn.onclick = () => window.print();
+
+    reviewContainer.appendChild(printBtn);
+
+    document.getElementById("quiz").style.display = "none";
+    document.getElementById("bottom-ui").style.display = "none";
+    document.getElementById("section-review").style.display = "none";
+    reviewContainer.style.display = "block";
+    reviewContainer.scrollIntoView({ behavior: "smooth" });
+  }
+
 
   function showReview(sectionIndex, sectionData, startIndex, endIndex) {
     const reviewContainer = document.getElementById("section-review");
@@ -162,6 +210,10 @@ document.addEventListener("DOMContentLoaded", () => {
     continueButton.style.borderRadius = "6px";
     continueButton.style.cursor = "pointer";
     continueButton.onclick = () => {
+      if (sectionIndex === 4) {
+        showFinalReview();
+        return;
+      }
       document.getElementById("section-review").style.display = "none";
       showSection(sectionIndex + 1);
       document.getElementById("quiz").style.display = "block";
@@ -191,18 +243,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const startBtn = document.getElementById("start-button");
   if (startBtn) {
-    startBtn.addEventListener("click", function() {
-      document.getElementById("start-container").style.display = "none";
-      document.getElementById("quiz").style.display = "block";
-      document.getElementById("bottom-ui").style.display = "block";
-      fetch('quiz-data.json')
-        .then(response => response.json())
-        .then(data => {
-          quizData = data;
-          initializeQuiz(data);
-        })
-        .catch(error => console.error('Error loading quiz data:', error));
-    });
+    
+startBtn.addEventListener("click", function() {
+  document.getElementById("start-container").style.display = "none";
+  document.getElementById("quiz").style.display = "block";
+  document.getElementById("bottom-ui").style.display = "block";
+  fetch('quiz-data.json')
+    .then(response => response.json())
+    .then(data => {
+      quizData = data;
+      initializeQuiz(data);
+    })
+    .catch(error => console.error('Error loading quiz data:', error));
+});
+
   }
 
   let currentSectionIndex = 0;
