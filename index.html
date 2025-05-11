@@ -10,6 +10,15 @@
   <!-- unchanged HTML layout -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
+      // Handle error gracefully if quizData is not available
+      if (typeof quizData === 'undefined') {
+        const quizContainer = document.getElementById("quiz") || document.body;
+        const errorMsg = document.createElement("p");
+        errorMsg.style.color = "red";
+        errorMsg.innerText = "Failed to load quiz-data.json. Please ensure it exists and is accessible.";
+        quizContainer.appendChild(errorMsg);
+        return;
+      }
       // Example section range for demonstration
       const section = 0; // Adjust as needed based on current section logic
       const questionsPerSection = 50;
