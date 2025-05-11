@@ -127,6 +127,7 @@
 <script>
 let quizData = [];
 let currentSectionIndex = 0;
+let sectionScores = {}; // Track section scores
 let userAnswers = {}; // Track user answers globally
 let totalScore = 0;
 document.addEventListener("DOMContentLoaded", () => {
@@ -275,14 +276,16 @@ function handleAnswer(qIndex, selected, correctAnswerText, explanation) {
   const correct = correctAnswerText.trim();
 
   if (selectedChoice.trim() === correct) {
+    const sectionIndex = Math.floor(qIndex / 50);
+    sectionScores[sectionIndex] = (sectionScores[sectionIndex] || 0) + 1;
     const sectionBase = Math.floor(qIndex / 50) * 50;
     const sectionCorrect = Array.from({ length: 50 }, (_, i) => {
       const idx = sectionBase + i;
       const selected = document.querySelector(`input[name='question${idx}']:checked`);
       return selected && quizData[idx].choices[selected.value] === quizData[idx].correct;
     }).filter(Boolean).length;
-    document.getElementById("sectionScore").innerText = sectionCorrect;
-    const sectionPercent = Math.round((sectionCorrect / 50) * 100);
+    document.getElementById("sectionScore").innerText = sectionScores[sectionIndex];
+    const sectionPercent = Math.round((sectionScores[sectionIndex] / 50) * 100);
     document.getElementById("sectionPercent").innerText = sectionPercent;
 
     const currentScore = parseInt(document.getElementById("score").innerText);
