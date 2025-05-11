@@ -133,24 +133,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const quizContainer = document.getElementById("quiz");
   const progressBar = document.getElementById("progress-container");
 
-  function showFallbackSections() {
-    for (let i = 0; i < 5; i++) {
-      const section = document.createElement("div");
-      section.className = "section";
-      section.id = `section${i}`;
-      section.style.display = i === 0 ? "block" : "none";
-      section.innerHTML = `<h2>Section ${i + 1}</h2><p style='color:red;'>Quiz data not available. Section ${i + 1} cannot display questions.</p>`;
-      quizContainer.appendChild(section);
-
-      const review = document.createElement("div");
-      review.className = "section";
-      review.id = `review${i}`;
-      review.style.display = "none";
-      review.innerHTML = `<h2>Section ${i + 1} Review</h2><p style='color:red;'>Review not available for this section without quiz data.</p>`;
-      quizContainer.appendChild(review);
-    }
-  }
-
   function showSection(index) {
     const sections = document.querySelectorAll(".section");
     sections.forEach((sec, i) => {
@@ -222,15 +204,15 @@ document.addEventListener("DOMContentLoaded", () => {
         initializeQuiz(data);
         updateReviewScores(0);
         showSection(0);
-      })
-      .catch((err) => {
-        console.warn("Quiz data unavailable, loading fallback sections.", err);
-        showFallbackSections();
-        showSection(0);
         updateNavButtons();
+      })
+      .catch((error) => {
+        console.error("Quiz data could not be loaded:", error);
+        quizContainer.innerHTML = "<p style='color:red;'>Quiz data could not be loaded. Please make sure quiz-data.json is available in the same directory.</p>";
       });
   });
 });
+
 function updateReviewScores(sectionIndex) {
   if (!quizData.length) return;
   const start = sectionIndex * 50;
