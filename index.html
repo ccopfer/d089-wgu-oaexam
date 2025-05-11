@@ -240,9 +240,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     for (let i = start; i < end; i++) {
       const q = quizData[i];
-      const userInput = document.querySelector(`input[name='question${i}']:checked`);
-      const userAnswerIndex = userInput ? parseInt(userInput.value) : null;
-      const userAnswer = userAnswerIndex !== null ? quizData[i].choices[userAnswerIndex] : '<em>Unanswered</em>';
+      let userAnswer = '<em>Unanswered</em>';
+      let userAnswerIndex = null;
+      const inputs = document.getElementsByName(`question${i}`);
+      inputs.forEach(input => {
+        if (input.checked) {
+          userAnswerIndex = parseInt(input.value);
+          userAnswer = quizData[i].choices[userAnswerIndex];
+        }
+      });
 
       const qReview = document.createElement("div");
       qReview.className = "question";
