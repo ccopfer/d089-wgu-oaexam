@@ -195,51 +195,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (selected && quizData[i].choices[selected.value] === quizData[i].correct) {
         sectionCorrect++;
       }
-      // Update review page values dynamically
-      const selectedAnswerP = document.querySelector(`#review${index} .question:nth-of-type(${i - sectionStart + 1}) p:nth-of-type(2)`);
-      const correctAnswerP = document.querySelector(`#review${index} .question:nth-of-type(${i - sectionStart + 1}) p:nth-of-type(3)`);
-
-      const selectedIndex = userAnswers[i];
-      const selectedText = (selectedIndex !== undefined && quizData[i].choices[selectedIndex]) ? quizData[i].choices[selectedIndex] : 'None';
-      if (selectedAnswerP) {
-        selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> ${selectedText}`;
-        if (selectedText !== 'None' && selectedText !== quizData[i].correct) {
-          selectedAnswerP.style.color = "red";
-          selectedAnswerP.style.fontWeight = "bold";
-        } else {
-          selectedAnswerP.style.color = "black";
-          selectedAnswerP.style.fontWeight = "normal";
-        }
-      }
-      if (correctAnswerP && selectedText !== 'None' && selectedText !== quizData[i].correct) {
-        correctAnswerP.style.color = "green";
-        correctAnswerP.style.fontWeight = "bold";
-      } else if (correctAnswerP) {
-        correctAnswerP.style.color = "black";
-        correctAnswerP.style.fontWeight = "normal";
-      }
-    }
-
-    document.getElementById("sectionScore").innerText = sectionCorrect;
-    document.getElementById("sectionPercent").innerText = Math.round((sectionCorrect / 50) * 100);
-
-    const reviewScore = document.getElementById(`reviewSectionScore${index}`);
-    const reviewPercent = document.getElementById(`reviewPercentScore${index}`);
-    const reviewTotal = document.getElementById(`reviewTotalScore${index}`);
-    if (reviewScore && reviewPercent && reviewTotal) {
-      reviewScore.innerText = sectionCorrect;
-      reviewPercent.innerText = Math.round((sectionCorrect / 50) * 100);
-      reviewTotal.innerText = score;
-    }
-
-    const sectionStart = index * 50;
-    const sectionEnd = sectionStart + 50;
-    let sectionCorrect = 0;
-    for (let i = sectionStart; i < sectionEnd; i++) {
-      const selected = document.querySelector(`input[name='question${i}']:checked`);
-      if (selected && quizData[i].choices[selected.value] === quizData[i].correct) {
-        sectionCorrect++;
-      }
     }
     document.getElementById("sectionScore").innerText = sectionCorrect;
     document.getElementById("sectionPercent").innerText = Math.round((sectionCorrect / 50) * 100);
@@ -358,6 +313,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (selectedText !== 'None' && selectedText !== q.correct) {
           selectedAnswerP.style.color = "red";
           selectedAnswerP.style.fontWeight = "bold";
+        } else {
+          selectedAnswerP.style.color = "black";
+          selectedAnswerP.style.fontWeight = "normal";
         }
         qReview.appendChild(selectedAnswerP);
 
@@ -366,6 +324,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (selectedText !== 'None' && selectedText !== q.correct) {
           correct.style.color = "green";
           correct.style.fontWeight = "bold";
+        } else {
+          correct.style.color = "black";
+          correct.style.fontWeight = "normal";
         }
         qReview.appendChild(correct);
 
