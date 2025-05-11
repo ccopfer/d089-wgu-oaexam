@@ -136,12 +136,12 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("start-container").style.display = "none";
       document.getElementById("quiz").style.display = "block";
       document.getElementById("progress-container").style.display = "block";
-      const start = index * 50;
-    const end = start + 50;
+      let start = 0;
+    let end = 50;
     let sectionCorrect = 0;
     for (let i = start; i < end; i++) {
       const selected = document.querySelector(`input[name='question${i}']:checked`);
-      if (selected && quizData[i].choices[selected.value] === quizData[i].correct) {
+      if (selected && quizData && quizData[i] && quizData[i].choices[selected.value] === quizData[i].correct) {
         sectionCorrect++;
       }
     }
@@ -333,7 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
       for (let i = start; i < end; i++) {
         const inputs = document.getElementsByName(`question${i}`);
         let userAnswerIndex = null;
-        let userAnswer = '<em>Unanswered</em>';
+        let userAnswer = '';
         inputs.forEach(input => {
           if (input.checked) {
             userAnswerIndex = parseInt(input.value);
@@ -343,10 +343,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const selectedP = document.querySelector(`#review${section} .question:nth-of-type(${i - start + 1}) p:nth-of-type(2)`);
         if (selectedP) {
           selectedP.innerHTML = `<strong>Selected Answer:</strong> ${userAnswer}`;
-          if (userAnswerIndex === null) {
-            selectedP.style.fontStyle = "italic";
-            selectedP.style.color = "#333";
-          } else if (quizData[i].choices[userAnswerIndex] !== quizData[i].correct) {
+          if (userAnswerIndex !== null && quizData[i].choices[userAnswerIndex] !== quizData[i].correct) {
             selectedP.style.color = "red";
             selectedP.style.fontWeight = "bold";
           } else {
