@@ -136,12 +136,12 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("start-container").style.display = "none";
       document.getElementById("quiz").style.display = "block";
       document.getElementById("progress-container").style.display = "block";
-      let start = 0;
-    let end = 50;
+      const start = 0;
+      const end = 50;
     let sectionCorrect = 0;
     for (let i = start; i < end; i++) {
       const selected = document.querySelector(`input[name='question${i}']:checked`);
-      if (selected && quizData && quizData[i] && quizData[i].choices[selected.value] === quizData[i].correct) {
+      if (selected && quizData && quizData[i] && Array.isArray(quizData[i].choices) && quizData[i].choices[selected.value] === quizData[i].correct) {
         sectionCorrect++;
       }
     }
@@ -255,7 +255,9 @@ document.addEventListener("DOMContentLoaded", () => {
       inputs.forEach(input => {
         if (input.checked) {
           userAnswerIndex = parseInt(input.value);
-          userAnswer = quizData[i].choices[userAnswerIndex];
+          if (quizData[i] && Array.isArray(quizData[i].choices)) {
+            userAnswer = quizData[i].choices[userAnswerIndex];
+          }
         }
       });
 
@@ -268,11 +270,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const selectedAnswerP = document.createElement("p");
       selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> ${userAnswer}`;
-      if (userAnswerIndex !== null && quizData[i].choices[userAnswerIndex] !== q.correct) {
+      if (userAnswerIndex !== null && quizData[i] && Array.isArray(quizData[i].choices) && quizData[i].choices[userAnswerIndex] !== q.correct) {
         selectedAnswerP.style.color = "red";
         selectedAnswerP.style.fontWeight = "bold";
-      } else {
-        selectedAnswerP.style.color = "black";
+      } else if (userAnswerIndex !== null && quizData[i] && Array.isArray(quizData[i].choices)) {
+          selectedAnswerP.style.color = "black";
         selectedAnswerP.style.fontWeight = "bold";
       }
       qReview.appendChild(selectedAnswerP);
@@ -330,6 +332,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const section = index;
       const start = section * 50;
       const end = start + 50;
+      let sectionCorrect = 0;
       for (let i = start; i < end; i++) {
         const inputs = document.getElementsByName(`question${i}`);
         let userAnswerIndex = null;
@@ -352,14 +355,27 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         }
       }
+      const sectionPercent = Math.round((sectionCorrect / 50) * 100);
+      document.getElementById(`reviewSectionScore${index}`).innerText = sectionCorrect;
+      document.getElementById(`reviewPercentScore${index}`).innerText = sectionPercent;
+      document.getElementById(`reviewTotalScore${index}`).innerText = score;
     }
     window.scrollTo(0, 0);
     const isReview = document.getElementById(`review${index}`);
     const sectionCheck = document.getElementById(`section${index}`);
     const progressBar = document.getElementById("progress-container");
     progressBar.style.display = "block";
-    document.getElementById("sectionScore").innerText = 0;
-    document.getElementById("sectionPercent").innerText = 0;
+    const start = index * 50;
+    const end = start + 50;
+    let sectionCorrect = 0;
+    for (let i = start; i < end; i++) {
+      const selected = document.querySelector(`input[name='question${i}']:checked`);
+      if (selected && quizData[i].choices[selected.value] === quizData[i].correct) {
+        sectionCorrect++;
+      }
+    }
+    document.getElementById("sectionScore").innerText = sectionCorrect;
+    document.getElementById("sectionPercent").innerText = Math.round((sectionCorrect / 50) * 100);
     const sections = document.querySelectorAll(".section");
     if (index < 0 || index >= sections.length) return;
 
