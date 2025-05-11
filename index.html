@@ -186,6 +186,27 @@ document.addEventListener("DOMContentLoaded", () => {
       sec.style.display = i === index ? "block" : "none";
     });
     currentSectionIndex = index;
+
+    const sectionStart = index * 50;
+    const sectionEnd = sectionStart + 50;
+    let sectionCorrect = 0;
+    for (let i = sectionStart; i < sectionEnd; i++) {
+      const selected = document.querySelector(`input[name='question${i}']:checked`);
+      if (selected && quizData[i].choices[selected.value] === quizData[i].correct) {
+        sectionCorrect++;
+      }
+    }
+    document.getElementById("sectionScore").innerText = sectionCorrect;
+    document.getElementById("sectionPercent").innerText = Math.round((sectionCorrect / 50) * 100);
+
+    const reviewScore = document.getElementById(`reviewSectionScore${index}`);
+    const reviewPercent = document.getElementById(`reviewPercentScore${index}`);
+    const reviewTotal = document.getElementById(`reviewTotalScore${index}`);
+    if (reviewScore && reviewPercent && reviewTotal) {
+      reviewScore.innerText = sectionCorrect;
+      reviewPercent.innerText = Math.round((sectionCorrect / 50) * 100);
+      reviewTotal.innerText = score;
+    }
   }
 
   function updateNavButtons() {
