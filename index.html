@@ -197,6 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     window.currentSectionIndex = index;
+    updateReviewScores(index);
   }
 
   function updateNavButtons() {
@@ -212,10 +213,14 @@ document.addEventListener("DOMContentLoaded", () => {
     progressBar.style.display = "block";
 
     fetch("quiz-data.json")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch quiz data");
+        return res.json();
+      })
       .then((data) => {
         quizData = data;
         initializeQuiz(data);
+        updateReviewScores(0);
         showSection(0);
       })
       .catch((err) => {
@@ -226,6 +231,34 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 });
+function updateReviewScores(sectionIndex) {
+  if (!quizData.length) return;
+  const start = sectionIndex * 50;
+  const end = start + 50;
+  let sectionCorrect = 0;
+  for (let i = start; i < end && i < quizData.length; i++) {
+    const selected = document.querySelector(`input[name='question${i}']:checked`);
+    if (selected && quizData[i].choices[selected.value] === quizData[i].correct) {
+      sectionCorrect++;
+    }
+  }
+  const percent = Math.round((sectionCorrect / 50) * 100);
+  const reviewScoreEl = document.getElementById(`reviewSectionScore${sectionIndex}`);
+  const reviewPercentEl = document.getElementById(`reviewPercentScore${sectionIndex}`);
+  const reviewTotalEl = document.getElementById(`reviewTotalScore${sectionIndex}`);
+  if (reviewScoreEl) reviewScoreEl.innerText = sectionCorrect;
+  if (reviewPercentEl) reviewPercentEl.innerText = percent;
+  if (reviewTotalEl) {
+    let totalCorrect = 0;
+    for (let i = 0; i < quizData.length; i++) {
+      const selected = document.querySelector(`input[name='question${i}']:checked`);
+      if (selected && quizData[i].choices[selected.value] === quizData[i].correct) {
+        totalCorrect++;
+      }
+    }
+    reviewTotalEl.innerText = totalCorrect;
+  }
+}
 </script>
 </body>
 </html>
