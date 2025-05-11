@@ -281,8 +281,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const correct = document.createElement("p");
       correct.innerHTML = `<strong>Correct Answer:</strong> ${q.correct}`;
-      correct.style.color = "green";
-      correct.style.fontWeight = "bold";
+      if (userAnswerIndex !== null && quizData[i].choices[userAnswerIndex] !== q.correct) {
+        correct.style.color = "green";
+        correct.style.fontWeight = "bold";
+      }
       qReview.appendChild(correct);
 
       const explanation = document.createElement("p");
