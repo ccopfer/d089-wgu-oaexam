@@ -4,5 +4,124 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WGU: D089 Principles of Economics OA Exam Quiz</title>
-  ...
+  <style>
+    body {
+      font-family: Futura, 'Trebuchet MS', Arial, sans-serif;
+      background-color: #f4f6f9;
+      padding: 20px;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    *, *::before, *::after {
+      box-sizing: inherit;
+    }
+    h1 {
+      text-align: center;
+      color: #003058;
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+    }
+    .question {
+      background: #ffffff;
+      border: 2px dashed #003058;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 25px;
+      box-shadow: 2px 2px 8px rgba(0, 150, 136, 0.1);
+    }
+    .choices label {
+      display: block;
+      background: #e6ecf2;
+      border: 1px solid #d9dee8;
+      padding: 8px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .choices label:hover {
+      background-color: #ccd8e6;
+    }
+    .feedback {
+      margin-top: 10px;
+      font-weight: bold;
+      font-style: italic;
+    }
+    .progress-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #ffffff;
+      padding: 10px 20px;
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      font-size: 1.1rem;
+      display: none;
+    }
+    .progress-flex {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .progress-bar {
+      flex: 1 1 200px;
+      margin-right: 20px;
+      background-color: #dce3ee;
+      border: 1px solid #003058;
+      border-radius: 8px;
+      overflow: hidden;
+      min-width: 200px;
+    }
+    .progress-fill {
+      height: 24px;
+      background-color: #003058;
+      width: 0%;
+      text-align: center;
+      color: white;
+      font-weight: bold;
+      line-height: 24px;
+      transition: width 0.5s;
+    }
+    .progress-nav button {
+      background-color: #003058;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      margin-left: 10px;
+      margin-right: 10px;
+      cursor: pointer;
+      box-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+    }
+    .section {
+      padding-bottom: 160px;
+    }
+  </style>
+</head>
+<body>
+  <h1>📘 WGU: D089 Principles of Economics OA Exam Quiz 📘</h1>
+  <div id="start-container" style="text-align:center; margin-top: 50px;">
+    <button id="start-button" style="background-color:#003058;color:white;padding:12px 24px;font-size:1.2rem;border:none;border-radius:8px;cursor:pointer;box-shadow:2px 2px 6px rgba(0,0,0,0.2);">Start Exam</button>
+  </div>
+  <div id="quiz" style="display:none;"></div>
+  <div class="progress-container" id="progress-container">
+    <div class="progress-flex">
+      <div style="flex:1">
+        <p>Score: <span id="score">0</span>/250 (<span id="percent">0</span>%)</p>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+      <div class="progress-nav">
+        <button id="prev-button">Previous Section</button>
+        <button id="next-button">Next Section</button>
+      </div>
+    </div>
+  </div>
+<script>
+// JavaScript from the canvas included here
+</script>
+</body>
 </html>
