@@ -127,6 +127,7 @@
 <script>
 let quizData = [];
 let currentSectionIndex = 0;
+let userAnswers = {}; // Track user answers globally
 let totalScore = 0;
 document.addEventListener("DOMContentLoaded", () => {
   let quizData = [];
@@ -267,6 +268,9 @@ function handleAnswer(qIndex, selected, correctAnswerText, explanation) {
   inputs.forEach(input => input.disabled = true);
 
   const selectedInput = document.querySelector(`input[name='question${qIndex}']:checked`);
+  if (selectedInput) {
+    userAnswers[qIndex] = parseInt(selectedInput.value);
+  }
   const selectedChoice = selectedInput ? quizData[qIndex].choices[selectedInput.value] : "";
   const correct = correctAnswerText.trim();
 
@@ -379,8 +383,8 @@ function initializeQuiz(data) {
       qReview.appendChild(qText);
 
       const selectedAnswerP = document.createElement("p");
-      const selectedIndex = Array.from(document.getElementsByName(`question${i}`)).find(input => input.checked)?.value;
-      const selectedText = selectedIndex !== undefined ? data[i].choices[selectedIndex] : 'None';
+      const selectedIndex = userAnswers[i];
+      const selectedText = (selectedIndex !== undefined && data[i].choices[selectedIndex]) ? data[i].choices[selectedIndex] : 'None';
       selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> ${selectedText}`;
       qReview.appendChild(selectedAnswerP);
 
