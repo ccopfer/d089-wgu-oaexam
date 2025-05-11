@@ -241,7 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = start; i < end; i++) {
       const q = quizData[i];
       const userInput = document.querySelector(`input[name='question${i}']:checked`);
-      const userAnswer = userInput ? quizData[i].choices[parseInt(userInput.value)] : null;
+      const userAnswer = userInput ? quizData[i].choices[parseInt(userInput.value)] : '<em>Unanswered</em>';
 
       const qReview = document.createElement("div");
       qReview.className = "question";
@@ -263,10 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
       explanation.innerHTML = `<strong>Explanation:</strong> ${q.explanation}`;
       qReview.appendChild(explanation);
 
-      const selectedAnswer = document.createElement("p");
-      selectedAnswer.innerHTML = `<strong>Selected Answer:</strong> ${userAnswer || '<em>Unanswered</em>'}`;
-      selectedAnswer.style.color = userAnswer && userAnswer !== q.correct ? "red" : "black";
-      qReview.appendChild(selectedAnswer);
+      
 
       reviewDiv.appendChild(qReview);
     }
@@ -307,10 +304,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function showSection(index) {
     window.scrollTo(0, 0);
     const isReview = document.getElementById(`review${index}`);
-    if (isReview && isReview.style.display !== "none") {
-      document.getElementById("progress-container").style.display = "none";
+    const progressBar = document.getElementById("progress-container");
+    if (isReview && isReview.classList.contains("section") && isReview.style.display !== "none") {
+      progressBar.style.display = "none";
     } else {
-      document.getElementById("progress-container").style.display = "block";
+      progressBar.style.display = "block";
     }
     document.getElementById("sectionScore").innerText = 0;
     document.getElementById("sectionPercent").innerText = 0;
