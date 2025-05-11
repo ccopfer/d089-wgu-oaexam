@@ -354,11 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const isReview = document.getElementById(`review${index}`);
     const sectionCheck = document.getElementById(`section${index}`);
     const progressBar = document.getElementById("progress-container");
-    if (isReview && isReview.classList.contains("section") && isReview.style.display !== "none") {
-      progressBar.style.display = "none";
-    } else if (sectionCheck && sectionCheck.classList.contains("section")) {
-      progressBar.style.display = "block";
-    }
+    progressBar.style.display = "block";
     document.getElementById("sectionScore").innerText = 0;
     document.getElementById("sectionPercent").innerText = 0;
     const sections = document.querySelectorAll(".section");
