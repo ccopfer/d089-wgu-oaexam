@@ -127,6 +127,7 @@
 <script>
 let quizData = [];
 let currentSectionIndex = 0;
+let score = 0;
 let sectionScores = {}; // Track section scores
 let userAnswers = {}; // Track user answers globally
 let totalScore = 0;
@@ -262,7 +263,6 @@ function updateReviewScores(sectionIndex) {
 }
 function handleAnswer(qIndex, selected, correctAnswerText, explanation) {
   const feedback = document.getElementById(`feedback${qIndex}`);
-  // Allow answer selection once only
   if (feedback.innerHTML !== "") return;
 
   const inputs = document.getElementsByName(`question${qIndex}`);
@@ -272,37 +272,38 @@ function handleAnswer(qIndex, selected, correctAnswerText, explanation) {
   if (selectedInput) {
     userAnswers[qIndex] = parseInt(selectedInput.value);
   }
+
   const selectedChoice = selectedInput ? quizData[qIndex].choices[selectedInput.value] : "";
   const correct = correctAnswerText.trim();
 
+  const sectionIndex = Math.floor(qIndex / 50);
+  let sectionCorrect = 0;
+  for (let i = sectionIndex * 50; i < (sectionIndex + 1) * 50 && i < quizData.length; i++) {
+    const sel = document.querySelector(`input[name='question${i}']:checked`);
+    if (sel && quizData[i].choices[sel.value] === quizData[i].correct) {
+      sectionCorrect++;
+    }
+  }
+
+  document.getElementById("sectionScore").innerText = sectionCorrect;
+  document.getElementById("sectionPercent").innerText = Math.round((sectionCorrect / 50) * 100);
+
   if (selectedChoice.trim() === correct) {
-    const sectionIndex = Math.floor(qIndex / 50);
-    sectionScores[sectionIndex] = (sectionScores[sectionIndex] || 0) + 1;
-    const sectionBase = Math.floor(qIndex / 50) * 50;
-    const sectionCorrect = Array.from({ length: 50 }, (_, i) => {
-      const idx = sectionBase + i;
-      const selected = document.querySelector(`input[name='question${idx}']:checked`);
-      return selected && quizData[idx].choices[selected.value] === quizData[idx].correct;
-    }).filter(Boolean).length;
-    document.getElementById("sectionScore").innerText = sectionScores[sectionIndex];
-    const sectionPercent = Math.round((sectionScores[sectionIndex] / 50) * 100);
-    document.getElementById("sectionPercent").innerText = sectionPercent;
-
-    const currentScore = parseInt(document.getElementById("score").innerText);
-    totalScore++;
-    const newScore = totalScore;
-    document.getElementById("score").innerText = newScore;
-    const percent = Math.round((newScore / 250) * 100);
-    document.getElementById("percent").innerText = percent;
-    const progressFill = document.getElementById("progress-fill");
-    progressFill.style.width = percent + "%";
-    progressFill.innerText = percent + "%";
-
+    score++;
     feedback.innerHTML = `✅ Correct! 🎉 ${explanation}`;
     feedback.style.color = "green";
   } else {
     feedback.innerHTML = `❌ Incorrect. Correct Answer: ${correctAnswerText}<br>${explanation}`;
     feedback.style.color = "red";
+  }
+
+  document.getElementById("score").innerText = score;
+  const percent = Math.round((score / 250) * 100);
+  document.getElementById("percent").innerText = percent;
+  const progressFill = document.getElementById("progress-fill");
+  progressFill.style.width = percent + "%";
+  progressFill.innerText = percent + "%";
+}
   }
 }
 
