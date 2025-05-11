@@ -250,6 +250,11 @@ document.addEventListener("DOMContentLoaded", () => {
       qText.innerHTML = `<strong>Q${i + 1}:</strong> ${q.question}`;
       qReview.appendChild(qText);
 
+      const selectedAnswerP = document.createElement("p");
+      selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> ${userAnswer || '<em>Unanswered</em>'}`;
+      selectedAnswerP.style.color = userAnswer && userAnswer !== q.correct ? "red" : "black";
+      qReview.appendChild(selectedAnswerP);
+
       const correct = document.createElement("p");
       correct.innerHTML = `<strong>Correct Answer:</strong> ${q.correct}`;
       qReview.appendChild(correct);
@@ -302,7 +307,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function showSection(index) {
     window.scrollTo(0, 0);
     const isReview = document.getElementById(`review${index}`);
-    document.getElementById("progress-container").style.display = isReview && isReview.style.display !== "none" ? "none" : "block";
+    if (isReview && isReview.style.display !== "none") {
+      document.getElementById("progress-container").style.display = "none";
+    } else {
+      document.getElementById("progress-container").style.display = "block";
+    }
     document.getElementById("sectionScore").innerText = 0;
     document.getElementById("sectionPercent").innerText = 0;
     const sections = document.querySelectorAll(".section");
