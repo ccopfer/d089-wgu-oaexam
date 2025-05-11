@@ -11,56 +11,49 @@
       padding: 20px;
       margin: 0;
     }
-    h1, h2 {
+    h1 {
       text-align: center;
       color: #003058;
-      margin-bottom: 20px;
-    }
-    .title-bar {
-      height: 48px;
-      background-color: #003058;
+      font-size: 2.5rem;
       margin-bottom: 30px;
     }
     .question {
-      background-color: #ffffff;
-      border: 2px solid #003058;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 20px;
-      box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+      background: #ffffff;
+      border: 2px dashed #003058;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 25px;
+      box-shadow: 2px 2px 8px rgba(0, 150, 136, 0.1);
     }
     .choices label {
       display: block;
-      background: #eaf0f6;
-      border: 1px solid #d0d7e2;
+      background: #e6ecf2;
+      border: 1px solid #d9dee8;
+      padding: 8px;
       border-radius: 8px;
-      padding: 10px;
       margin-bottom: 10px;
       cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .choices label:hover {
+      background-color: #ccd8e6;
     }
     .feedback {
       margin-top: 10px;
+      font-weight: bold;
       font-style: italic;
     }
-    #bottom-ui {
+    .progress-container {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
       background: #ffffff;
-      box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+      padding: 10px 20px;
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
       z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 10px 0;
-    }
-    .nav-buttons {
-      margin-bottom: 5px;
-    }
-    .progress-container {
-      font-size: 1rem;
-      width: 90%;
+      font-size: 1.1rem;
+      display: none;
     }
     .progress-bar {
       width: 100%;
@@ -79,58 +72,86 @@
       line-height: 24px;
       transition: width 0.5s;
     }
+    .section-nav-buttons {
+      position: sticky;
+      bottom: 80px;
+      background-color: #f4f6f9;
+      padding: 10px;
+      text-align: center;
+      z-index: 999;
+    }
   </style>
 </head>
 <body>
   <h1>📘 WGU: D089 Principles of Economics OA Exam Quiz 📘</h1>
-  <div class="title-bar"></div>
+  
   <div id="start-container" style="text-align:center; margin-top: 50px;">
-    <button id="start-button" style="background-color:#003058;color:white;padding:16px 32px;font-size:1.3rem;border:none;border-radius:10px;cursor:pointer;box-shadow:2px 2px 6px rgba(0,0,0,0.2);">
+    <button id="start-button" style="background-color:#003058;color:white;padding:12px 24px;font-size:1.2rem;border:none;border-radius:8px;cursor:pointer;box-shadow:2px 2px 6px rgba(0,0,0,0.2);">
       Start Exam
     </button>
   </div>
+
   <div id="quiz" style="display:none;"></div>
-  <div id="bottom-ui" style="display:none;">
-    <div class="nav-buttons" style="position: sticky; bottom: 0; background: #fff; padding: 12px 0; text-align: center; box-shadow: 0 -2px 8px rgba(0,0,0,0.1); z-index: 1000;">
-      <button id="prevBtn" style="background-color:#003058;color:white;padding:14px 28px;font-size:1.2rem;border:none;border-radius:10px;cursor:pointer;box-shadow:2px 2px 6px rgba(0,0,0,0.2);">Previous Section</button>
-      <button id="nextBtn" style="background-color:#003058;color:white;padding:14px 28px;font-size:1.2rem;border:none;border-radius:10px;cursor:pointer;box-shadow:2px 2px 6px rgba(0,0,0,0.2);">Next Section</button>
-    </div>
-    <div class="progress-container" style="background: #ffffff; padding: 10px 20px; box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1); font-size: 1.1rem;">
-      <p>Score: <span id="score">0</span>/250 (<span id="percent">0</span>%)</p>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progress-fill" style="height: 24px; background-color: #003058; width: 0%; text-align: center; color: white; font-weight: bold; line-height: 24px; transition: width 0.5s;"></div>
-      </div>
+  <div class="progress-container" id="progress-container">
+    <p>Score: <span id="score">0</span>/250 (<span id="percent">0</span>%)</p>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
     </div>
   </div>
-  <div id="section-review" style="display:none; padding: 20px;"></div>
-  <div id="final-review" style="display:none; padding: 20px;"></div>
+
 <script>
-  let quizData = [];
+document.addEventListener("DOMContentLoaded", () => {
+  const startBtn = document.getElementById("start-button");
+  if (startBtn) {
+    startBtn.addEventListener("click", function() {
+      document.getElementById("start-container").style.display = "none";
+      document.getElementById("quiz").style.display = "block";
+      document.getElementById("progress-container").style.display = "block";
+      fetch('quiz-data.json')
+        .then(response => response.json())
+        .then(data => initializeQuiz(data))
+        .catch(error => console.error('Error loading quiz data:', error));
+    });
+  }
+
   let currentSectionIndex = 0;
   let score = 0;
 
-  function initializeQuiz(data) {
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
+  window.initializeQuiz = function(quizData) {
+    shuffleArray(quizData);
     const quizContainer = document.getElementById("quiz");
     quizContainer.innerHTML = "";
-    for (let section = 0; section < 5; section++) {
+
+    const sections = 5;
+    const questionsPerSection = 50;
+
+    for (let section = 0; section < sections; section++) {
       const sectionDiv = document.createElement("div");
       sectionDiv.className = "section";
       sectionDiv.id = `section${section}`;
-      sectionDiv.style.display = "none";
+      sectionDiv.style.display = section === 0 ? "block" : "none";
 
-      const start = section * 50;
-      const end = start + 50;
+      const start = section * questionsPerSection;
+      const end = start + questionsPerSection;
+      const sectionData = quizData.slice(start, end);
       const sectionTitle = document.createElement("h2");
       sectionTitle.innerText = `Section ${section + 1}`;
       sectionDiv.appendChild(sectionTitle);
 
-      for (let i = start; i < end; i++) {
-        const q = data[i];
+      sectionData.forEach((q, idx) => {
+        const qIndex = start + idx;
         const questionDiv = document.createElement("div");
         questionDiv.className = "question";
 
         const questionText = document.createElement("p");
-        questionText.innerHTML = `<strong>Q${i + 1}:</strong> ${q.question}`;
+        questionText.innerHTML = `<strong>Q${qIndex + 1}:</strong> ${q.question}`;
         questionDiv.appendChild(questionText);
 
         const choicesDiv = document.createElement("div");
@@ -140,10 +161,10 @@
           const label = document.createElement("label");
           const input = document.createElement("input");
           input.type = "radio";
-          input.name = `question${i}`;
+          input.name = `question${qIndex}`;
           input.value = choiceIdx;
           input.style.marginRight = "10px";
-          input.onclick = () => handleAnswer(i, choiceIdx);
+          input.onclick = () => handleAnswer(qIndex, choiceIdx, q.correct, q.explanation);
           label.appendChild(input);
           label.append(` ${choice}`);
           choicesDiv.appendChild(label);
@@ -151,12 +172,32 @@
 
         const feedback = document.createElement("div");
         feedback.className = "feedback";
-        feedback.id = `feedback${i}`;
+        feedback.id = `feedback${qIndex}`;
 
         questionDiv.appendChild(choicesDiv);
         questionDiv.appendChild(feedback);
         sectionDiv.appendChild(questionDiv);
+      });
+
+      const navDiv = document.createElement("div");
+      navDiv.className = "section-nav-buttons";
+
+      if (section > 0) {
+        const prevBtn = document.createElement("button");
+        prevBtn.innerText = "Previous Section";
+        prevBtn.onclick = () => showSection(section - 1);
+        prevBtn.style.marginRight = "10px";
+        navDiv.appendChild(prevBtn);
       }
+
+      if (section < sections - 1) {
+        const nextBtn = document.createElement("button");
+        nextBtn.innerText = "Next Section";
+        nextBtn.onclick = () => showSection(section + 1);
+        navDiv.appendChild(nextBtn);
+      }
+
+      sectionDiv.appendChild(navDiv);
       quizContainer.appendChild(sectionDiv);
     }
   }
@@ -167,24 +208,25 @@
       sec.style.display = i === index ? "block" : "none";
     });
     currentSectionIndex = index;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo(0, 0);
+    document.getElementById("progress-container").style.display = "block";
   }
 
-  function handleAnswer(qIndex, selected) {
+  function handleAnswer(qIndex, selected, correctAnswerText, explanation) {
     const feedback = document.getElementById(`feedback${qIndex}`);
     if (feedback.innerHTML !== "") return;
 
-    const q = quizData[qIndex];
-    const correctIndex = q.choices.findIndex(choice => choice === q.correct);
     const inputs = document.getElementsByName(`question${qIndex}`);
     inputs.forEach(input => input.disabled = true);
 
-    if (selected === correctIndex) {
+    const selectedLabel = document.querySelector(`input[name='question${qIndex}']:checked`).parentNode.textContent.trim();
+
+    if (selectedLabel === correctAnswerText) {
       score++;
-      feedback.innerHTML = `✅ Correct! 🎉 ${q.explanation}`;
+      feedback.innerHTML = `✅ Correct! 🎉 ${explanation}`;
       feedback.style.color = "green";
     } else {
-      feedback.innerHTML = `❌ Incorrect. Correct Answer: ${q.correct}<br>${q.explanation}`;
+      feedback.innerHTML = `❌ Incorrect. Correct Answer: ${correctAnswerText}<br>${explanation}`;
       feedback.style.color = "red";
     }
 
@@ -195,41 +237,8 @@
     progressFill.style.width = percent + "%";
     progressFill.innerText = percent + "%";
   }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const startBtn = document.getElementById("start-button");
-    startBtn.addEventListener("click", function () {
-      document.getElementById("start-container").style.display = "none";
-      document.getElementById("quiz").style.display = "block";
-      document.getElementById("bottom-ui").style.display = "flex";
-
-      fetch("quiz-data.json")
-        .then((response) => {
-          if (!response.ok) throw new Error("Fetch failed");
-          return response.json();
-        })
-        .then((data) => {
-          quizData = data;
-          initializeQuiz(data);
-          showSection(0);
-        })
-        .catch((error) => {
-          alert("⚠️ Could not load quiz-data.json. Please ensure it is in the same directory.");
-          console.error("Quiz data load error:", error);
-        });
-    });
-
-    document.getElementById("prevBtn").addEventListener("click", () => {
-      if (currentSectionIndex > 0) showSection(currentSectionIndex - 1);
-    });
-
-    document.getElementById("nextBtn").addEventListener("click", () => {
-      const start = currentSectionIndex * 50;
-      const end = start + 50;
-      const sectionData = quizData.slice(start, end);
-      showReview(currentSectionIndex, sectionData, start, end);
-    });
-  });
+});
 </script>
+
 </body>
 </html>
