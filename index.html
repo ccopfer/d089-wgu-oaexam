@@ -5,5 +5,182 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WGU: D089 Principles of Economics OA Exam Quiz</title>
-  ... (full content provided in canvas, omitted here for brevity)
+  <style>
+    body {
+      font-family: Futura, 'Trebuchet MS', Arial, sans-serif;
+      background-color: #f4f6f9;
+      padding: 20px;
+      margin: 0;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #003058;
+      margin-bottom: 20px;
+    }
+    .title-bar {
+      height: 48px;
+      background-color: #003058;
+      margin-bottom: 30px;
+    }
+    .message {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .message p {
+      font-size: 1rem;
+      color: #003058;
+    }
+    .message pre {
+      background:#f4f6f9;
+      padding:10px;
+      border:1px solid #ccc;
+      overflow:auto;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h1>📘 WGU: D089 Principles of Economics OA Exam Quiz 📘</h1>
+  <div class="title-bar"></div>
+  <div id="start-container" style="text-align:center; margin-top: 50px;">
+    <button id="start-button" style="background-color:#003058;color:white;padding:16px 32px;font-size:1.3rem;border:none;border-radius:10px;cursor:pointer;box-shadow:2px 2px 6px rgba(0,0,0,0.2);">
+      Start Exam
+    </button>
+  </div>
+  <div id="quiz" style="display:none;"></div>
+  <div id="bottom-ui" style="display:none;">
+    <div class="nav-buttons" style="position: sticky; bottom: 0; background: #fff; padding: 12px 0; text-align: center; box-shadow: 0 -2px 8px rgba(0,0,0,0.1); z-index: 1000;">
+      <button id="prevBtn" style="background-color:#003058;color:white;padding:14px 28px;font-size:1.2rem;border:none;border-radius:10px;cursor:pointer;box-shadow:2px 2px 6px rgba(0,0,0,0.2);">Previous Section</button>
+      <button id="nextBtn" style="background-color:#003058;color:white;padding:14px 28px;font-size:1.2rem;border:none;border-radius:10px;cursor:pointer;box-shadow:2px 2px 6px rgba(0,0,0,0.2);">Next Section</button>
+    </div>
+    <div class="progress-container" style="background: #ffffff; padding: 10px 20px; box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1); font-size: 1.1rem;">
+      <p>Score: <span id="score">0</span>/250 (<span id="percent">0</span>%)</p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="height: 24px; background-color: #003058; width: 0%; text-align: center; color: white; font-weight: bold; line-height: 24px; transition: width 0.5s;"></div>
+      </div>
+    </div>
+  </div>
+  <div id="section-review" style="display:none; padding: 20px;"></div>
+  <div id="final-review" style="display:none; padding: 20px;"></div>
+<script>
+  let quizData = [];
+  let currentSectionIndex = 0;
+  let score = 0;
+
+  function initializeQuiz(data) {
+    const quizContainer = document.getElementById("quiz");
+    quizContainer.innerHTML = "";
+    for (let section = 0; section < 5; section++) {
+      const sectionDiv = document.createElement("div");
+      sectionDiv.className = "section";
+      sectionDiv.id = `section${section}`;
+      sectionDiv.style.display = "none";
+
+      const start = section * 50;
+      const end = start + 50;
+      const sectionTitle = document.createElement("h2");
+      sectionTitle.innerText = `Section ${section + 1}`;
+      sectionDiv.appendChild(sectionTitle);
+
+      for (let i = start; i < end; i++) {
+        const q = data[i];
+        const questionDiv = document.createElement("div");
+        questionDiv.className = "question";
+
+        const questionText = document.createElement("p");
+        questionText.innerHTML = `<strong>Q${i + 1}:</strong> ${q.question}`;
+        questionDiv.appendChild(questionText);
+
+        const choicesDiv = document.createElement("div");
+        choicesDiv.className = "choices";
+
+        q.choices.forEach((choice, choiceIdx) => {
+          const label = document.createElement("label");
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = `question${i}`;
+          input.value = choiceIdx;
+          input.style.marginRight = "10px";
+          input.onclick = () => handleAnswer(i, choiceIdx);
+          label.appendChild(input);
+          label.append(` ${choice}`);
+          choicesDiv.appendChild(label);
+        });
+
+        const feedback = document.createElement("div");
+        feedback.className = "feedback";
+        feedback.id = `feedback${i}`;
+
+        questionDiv.appendChild(choicesDiv);
+        questionDiv.appendChild(feedback);
+        sectionDiv.appendChild(questionDiv);
+      }
+      quizContainer.appendChild(sectionDiv);
+    }
+  }
+
+  function showSection(index) {
+    const sections = document.querySelectorAll(".section");
+    sections.forEach((sec, i) => {
+      sec.style.display = i === index ? "block" : "none";
+    });
+    currentSectionIndex = index;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const startBtn = document.getElementById("start-button");
+    startBtn.addEventListener("click", function () {
+      document.getElementById("start-container").style.display = "none";
+      document.getElementById("quiz").style.display = "block";
+      document.getElementById("bottom-ui").style.display = "block";
+
+      fetch("quiz-data.json")
+        .then((response) => {
+          if (!response.ok) throw new Error("Fetch failed");
+          return response.json();
+        })
+        .then((data) => {
+          quizData = data;
+          initializeQuiz(data);
+          showSection(0);
+        })
+        .catch((error) => {
+          alert("⚠️ Could not load quiz-data.json. Please ensure it is in the same directory as this HTML file.");
+          console.error("Quiz data load error:", error);
+        });
+    });
+  });
+
+  function handleAnswer(qIndex, selected) {
+    const feedback = document.getElementById(`feedback${qIndex}`);
+    if (feedback.innerHTML !== "") return;
+
+    const q = quizData[qIndex];
+    const correctIndex = q.choices.findIndex(choice => choice === q.correct);
+    const inputs = document.getElementsByName(`question${qIndex}`);
+    inputs.forEach(input => input.disabled = true);
+
+    if (selected === correctIndex) {
+      score++;
+      feedback.innerHTML = `✅ Correct! 🎉 ${q.explanation}`;
+      feedback.style.color = "green";
+    } else {
+      feedback.innerHTML = `❌ Incorrect. Correct Answer: ${q.correct}<br>${q.explanation}`;
+      feedback.style.color = "red";
+    }
+
+    document.getElementById("score").innerText = score;
+    const percent = Math.round((score / 250) * 100);
+    document.getElementById("percent").innerText = percent;
+    const progressFill = document.getElementById("progress-fill");
+    progressFill.style.width = percent + "%";
+    progressFill.innerText = percent + "%";
+  }
+</script>
+</body>
 </html>
