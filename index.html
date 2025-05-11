@@ -101,7 +101,13 @@
     .section {
       padding-bottom: 160px;
     }
-  </style>
+      .review-question {
+      border: none;
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0;
+      margin-bottom: 10px;
+    }
+</style>
 </head>
 <body>
   <h1>📘 WGU: D089 Principles of Economics OA Exam Quiz 📘</h1>
@@ -300,7 +306,7 @@ document.addEventListener("DOMContentLoaded", () => {
       for (let i = start; i < end; i++) {
         const q = data[i];
         const qReview = document.createElement("div");
-        qReview.className = "question";
+        qReview.className = "review-question";
 
         const qText = document.createElement("p");
         qText.innerHTML = `<strong>Q${i + 1}:</strong> ${q.question}`;
