@@ -130,49 +130,13 @@
       margin-left: 20px;
       font-size: 0.9rem;
     }
-    .coach-card {
-      background: #fff;
-      border-top: 4px solid #003058;
-      padding: 20px;
-      margin: 30px auto;
-      max-width: 900px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .coach-card h3 {
-      margin-top: 0;
-    }
-    .coach-question {
-      border-top: 1px solid #ccc;
-      padding: 16px 0;
-    }
-    .coach-answer {
-      display: flex;
-      justify-content: space-between;
-      margin: 6px 0;
-    }
-    .coach-label {
-      color: #003058;
-      font-weight: bold;
-    }
-    .correct-icon {
-      color: green;
-      font-weight: bold;
-      margin-left: 10px;
-    }
-    .incorrect-icon {
-      color: red;
-      font-weight: bold;
-      margin-left: 10px;
-    }
     .dark-mode {
       background-color: #1e1e1e;
       color: #f5f5f5;
     }
-    .dark-mode .question,
-    .dark-mode .coach-card {
+    .dark-mode .question {
       background-color: #2b2b2b;
       border-color: #444;
-      box-shadow: none;
     }
     .dark-mode .progress-container {
       background-color: #121212;
@@ -188,10 +152,12 @@
       color: #003058;
       border-color: #90caf9;
     }
-    .dark-mode .correct-icon { color: #66bb6a; }
-    .dark-mode .incorrect-icon { color: #ef5350; }
   </style>
   <script>
+    let quizData = [];
+    let currentSection = 0;
+    const questionsPerSection = 50;
+
     document.addEventListener("DOMContentLoaded", function () {
       const darkModeBtn = document.getElementById("toggleDarkMode");
       if (darkModeBtn) {
@@ -203,15 +169,49 @@
       window.startQuiz = function () {
         document.getElementById("intro").style.display = "none";
         document.getElementById("quizContainer").style.display = "block";
+        fetchQuizData().then(() => renderSection(currentSection));
       };
 
-      let currentSection = 0;
       window.changeSection = function (direction) {
-        const totalSections = 5;
-        const quiz = document.getElementById("quiz");
+        const totalSections = Math.ceil(quizData.length / questionsPerSection);
         currentSection = Math.max(0, Math.min(totalSections - 1, currentSection + direction));
-        quiz.innerHTML = `<h2>Section ${currentSection + 1}</h2><p>Questions for Section ${currentSection + 1} will appear here.</p>`;
+        renderSection(currentSection);
       };
+
+      async function fetchQuizData() {
+        try {
+          const response = await fetch('quiz-data.json');
+          quizData = await response.json();
+        } catch (err) {
+          console.error("Failed to load quiz data:", err);
+        }
+      }
+
+      function renderSection(sectionIndex) {
+        const quiz = document.getElementById("quiz");
+        if (!quizData.length) {
+          quiz.innerHTML = "<p>Loading questions failed or no data available.</p>";
+          return;
+        }
+
+        const start = sectionIndex * questionsPerSection;
+        const end = start + questionsPerSection;
+        const sectionQuestions = quizData.slice(start, end);
+
+        quiz.innerHTML = `<h2>Section ${sectionIndex + 1}</h2>` + sectionQuestions.map((q, i) => `
+          <div class="question">
+            <div class="question-number">Q${i + 1}</div>
+            <div class="question-text">${q.question}</div>
+            <div class="choices">
+              ${['a', 'b', 'c', 'd'].map(letter => `
+                <label>
+                  <input type="radio" name="q${i}" value="${letter}"> ${letter}: ${q[letter]}
+                </label>
+              `).join('')}
+            </div>
+          </div>
+        `).join('');
+      }
     });
   </script>
 </head>
