@@ -109,7 +109,7 @@
   <div class="progress-container" id="progress-container">
     <div class="progress-flex">
       <div style="flex:1">
-        <p>Section Score: <span id="sectionScore">0</span>/50 \(<span id="sectionPercent">0</span>%\) | Total Score: <span id="score">0</span>/250 (<span id="percent">0</span>%)</p>
+        <p>Section Score: <span id="sectionScore">0</span>/50 (<span id="sectionPercent">0</span>%) | Total Score: <span id="score">0</span>/250 (<span id="percent">0</span>%)</p>
         <div class="progress-bar">
           <div class="progress-fill" id="progress-fill"></div>
         </div>
@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
     reviewDiv.appendChild(reviewHeader);
 
     const scoreSummary = document.createElement("p");
-    scoreSummary.innerHTML = `Section Score: <span id='reviewSectionScore${section}'>0</span>/50 | Total Score: <span id='reviewTotalScore${section}'>0</span>/250 | Percentage: <span id='reviewPercentScore${section}'>0</span>%`;
+    scoreSummary.innerHTML = `Section Score: <span id='reviewSectionScore${section}'>0</span>/50 (<span id='reviewPercentScore${section}'>0</span>%) | Total Score: <span id='reviewTotalScore${section}'>0</span>/250`;
     reviewDiv.appendChild(scoreSummary);
 
     for (let i = start; i < end; i++) {
@@ -254,12 +254,10 @@ document.addEventListener("DOMContentLoaded", () => {
       explanation.innerHTML = `<strong>Explanation:</strong> ${q.explanation}`;
       qReview.appendChild(explanation);
 
-      if (userAnswer && userAnswer !== q.correct) {
-        const wrong = document.createElement("p");
-        wrong.innerHTML = `<strong>Your Answer:</strong> ${userAnswer}`;
-        wrong.style.color = "red";
-        qReview.appendChild(wrong);
-      }
+      const selectedAnswer = document.createElement("p");
+      selectedAnswer.innerHTML = `<strong>Selected Answer:</strong> ${userAnswer || '<em>Unanswered</em>'}`;
+      selectedAnswer.style.color = userAnswer && userAnswer !== q.correct ? "red" : "black";
+      qReview.appendChild(selectedAnswer);
 
       reviewDiv.appendChild(qReview);
     }
@@ -273,7 +271,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const continueBtn = document.createElement("button");
     continueBtn.innerText = "Continue to Next Section";
     continueBtn.style = "background-color:#003058;color:white;padding:8px 16px;border:none;border-radius:6px;margin:20px auto;display:block;cursor:pointer;";
-    continueBtn.onclick = () => showSection(section + 1);
+    continueBtn.onclick = () => {
+      const sectionStart = section * 50;
+      const sectionEnd = sectionStart + 50;
+      let sectionCorrect = 0;
+      for (let i = sectionStart; i < sectionEnd; i++) {
+        const selected = document.querySelector(`input[name='question${i}']:checked`);
+        if (selected && quizData[i].choices[selected.value] === quizData[i].correct) {
+          sectionCorrect++;
+        }
+      }
+      const sectionPercent = Math.round((sectionCorrect / 50) * 100);
+      document.getElementById(`reviewSectionScore${section}`).innerText = sectionCorrect;
+      document.getElementById(`reviewTotalScore${section}`).innerText = score;
+      document.getElementById(`reviewPercentScore${section}`).innerText = Math.round((score / 250) * 100);
+      showSection(section + 1);
+    };
     reviewDiv.appendChild(continueBtn);
 
     quizContainer.appendChild(reviewDiv);
@@ -283,6 +296,8 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   function showSection(index) {
+    const isReview = document.getElementById(`review${index}`);
+    document.getElementById("progress-container").style.display = isReview ? "none" : "block";
     document.getElementById("sectionScore").innerText = 0;
     document.getElementById("sectionPercent").innerText = 0;
     const sections = document.querySelectorAll(".section");
