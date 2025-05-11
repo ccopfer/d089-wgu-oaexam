@@ -244,6 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const startBtn = document.getElementById("start-button");
   if (startBtn) {
     
+
 startBtn.addEventListener("click", function() {
   document.getElementById("start-container").style.display = "none";
   document.getElementById("quiz").style.display = "block";
@@ -253,9 +254,11 @@ startBtn.addEventListener("click", function() {
     .then(data => {
       quizData = data;
       initializeQuiz(data);
+      showSection(0); // Ensure section 1 is shown
     })
     .catch(error => console.error('Error loading quiz data:', error));
 });
+
 
   }
 
