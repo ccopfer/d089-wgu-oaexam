@@ -125,6 +125,7 @@
     </div>
   </div>
 <script>
+let quizData = [];
 document.addEventListener("DOMContentLoaded", () => {
   let quizData = [];
   let userAnswers = {};
@@ -208,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch((error) => {
         console.error("Quiz data could not be loaded:", error);
-        quizContainer.innerHTML = "<p style='color:red;'>Quiz data could not be loaded. Please make sure quiz-data.json is available in the same directory.</p>";
+        console.warn("Quiz data could not be loaded. Please ensure quiz-data.json is present.");
       });
   });
 });
