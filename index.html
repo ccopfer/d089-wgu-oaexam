@@ -5,7 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WGU: D089 Principles of Economics OA Exam Quiz</title>
   <style>
-    body {
+    html {
+  scroll-behavior: smooth;
+}
+
+body {
       font-family: Futura, 'Trebuchet MS', Arial, sans-serif;
       background-color: #f4f6f9;
       padding: 20px;
@@ -237,7 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = start; i < end; i++) {
       const q = quizData[i];
       const userInput = document.querySelector(`input[name='question${i}']:checked`);
-      const userAnswer = userInput ? quizData[i].choices[userInput.value] : null;
+      const userAnswer = userInput ? quizData[i].choices[parseInt(userInput.value)] : null;
 
       const qReview = document.createElement("div");
       qReview.className = "question";
@@ -296,8 +300,9 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   function showSection(index) {
+    window.scrollTo(0, 0);
     const isReview = document.getElementById(`review${index}`);
-    document.getElementById("progress-container").style.display = isReview ? "none" : "block";
+    document.getElementById("progress-container").style.display = isReview && isReview.style.display !== "none" ? "none" : "block";
     document.getElementById("sectionScore").innerText = 0;
     document.getElementById("sectionPercent").innerText = 0;
     const sections = document.querySelectorAll(".section");
