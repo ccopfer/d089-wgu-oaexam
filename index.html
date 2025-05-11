@@ -103,6 +103,7 @@
     </button>
   </div>
 
+  <div id="section-review" style="display:none; padding: 20px;"></div>
   <div id="quiz" style="display:none;"></div>
   <div id="bottom-ui" style="display:none;">
   <div class="progress-container">
@@ -121,11 +122,70 @@
 let quizData = [];
 document.addEventListener("DOMContentLoaded", () => {
 
+  function showReview(sectionIndex, sectionData, startIndex, endIndex) {
+    const reviewContainer = document.getElementById("section-review");
+    reviewContainer.innerHTML = `<h2>Section ${sectionIndex + 1} Review</h2>`;
+    let sectionScore = 0;
+
+    for (let i = startIndex; i < endIndex; i++) {
+      const q = quizData[i];
+      const selectedInput = document.querySelector(`input[name='question${i}']:checked`);
+      const selected = selectedInput ? q.choices[selectedInput.value] : "No answer selected";
+      const isCorrect = selected === q.correct;
+      if (isCorrect) sectionScore++;
+
+      const reviewBlock = document.createElement("div");
+      reviewBlock.className = "question";
+      reviewBlock.innerHTML = `
+        <p><strong>Q${i + 1}:</strong> ${q.question}</p>
+        <p><strong>Your Answer:</strong> ${selected}</p>
+        <p><strong>Correct Answer:</strong> ${q.correct}</p>
+        <p><strong>Explanation:</strong> ${q.explanation}</p>
+        <hr>`;
+      reviewContainer.appendChild(reviewBlock);
+    }
+
+    const sectionScoreDisplay = document.createElement("p");
+    sectionScoreDisplay.innerHTML = `<strong>Section Score:</strong> ${sectionScore} / ${endIndex - startIndex}`;
+    const totalScoreDisplay = document.createElement("p");
+    totalScoreDisplay.innerHTML = `<strong>Total Score:</strong> ${score} / 250`;
+    reviewContainer.appendChild(sectionScoreDisplay);
+    reviewContainer.appendChild(totalScoreDisplay);
+
+    const continueButton = document.createElement("button");
+    continueButton.innerText = "Continue to Next Section";
+    continueButton.style.marginTop = "20px";
+    continueButton.style.padding = "10px 20px";
+    continueButton.style.backgroundColor = "#003058";
+    continueButton.style.color = "white";
+    continueButton.style.border = "none";
+    continueButton.style.borderRadius = "6px";
+    continueButton.style.cursor = "pointer";
+    continueButton.onclick = () => {
+      document.getElementById("section-review").style.display = "none";
+      showSection(sectionIndex + 1);
+      document.getElementById("quiz").style.display = "block";
+      document.getElementById("bottom-ui").style.display = "block";
+    };
+    reviewContainer.appendChild(continueButton);
+
+    document.getElementById("quiz").style.display = "none";
+    document.getElementById("bottom-ui").style.display = "none";
+    reviewContainer.scrollIntoView({ behavior: "smooth" });
+    reviewContainer.style.display = "block";
+  }
+
+
   // Navigation control
   document.getElementById("prevBtn").addEventListener("click", () => {
     if (currentSectionIndex > 0) showSection(currentSectionIndex - 1);
   });
   document.getElementById("nextBtn").addEventListener("click", () => {
+    const start = currentSectionIndex * 50;
+    const end = start + 50;
+    const sectionData = quizData.slice(start, end);
+    showReview(currentSectionIndex, sectionData, start, end);
+    return;
     if (currentSectionIndex < 4) showSection(currentSectionIndex + 1);
   });
 
@@ -137,9 +197,10 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("bottom-ui").style.display = "block";
       fetch('quiz-data.json')
         .then(response => response.json())
-        .then(data => { quizData = data; initializeQuiz(data); })
-        .then(response => response.json())
-        .then(data => initializeQuiz(data))
+        .then(data => {
+          quizData = data;
+          initializeQuiz(data);
+        })
         .catch(error => console.error('Error loading quiz data:', error));
     });
   }
