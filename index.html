@@ -127,6 +127,7 @@
 <script>
 let quizData = [];
 let currentSectionIndex = 0;
+let totalScore = 0;
 document.addEventListener("DOMContentLoaded", () => {
   let quizData = [];
   let userAnswers = {};
@@ -187,8 +188,20 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateNavButtons() {
   const prevBtn = document.getElementById("prev-button");
   const nextBtn = document.getElementById("next-button");
-  prevBtn.onclick = () => showSection(currentSectionIndex - 1);
-  nextBtn.onclick = () => showSection(currentSectionIndex + 1);
+  prevBtn.onclick = function () {
+    if (currentSectionIndex > 0) {
+      currentSectionIndex--;
+      showSection(currentSectionIndex);
+      updateNavButtons();
+    }
+  };
+  nextBtn.onclick = function () {
+    if (currentSectionIndex < 9) {
+      currentSectionIndex++;
+      showSection(currentSectionIndex);
+      updateNavButtons();
+    }
+  };
   prevBtn.style.display = currentSectionIndex > 0 ? "inline-block" : "none";
   nextBtn.style.display = currentSectionIndex < 9 ? "inline-block" : "none";
 }
@@ -247,6 +260,7 @@ function updateReviewScores(sectionIndex) {
 }
 function handleAnswer(qIndex, selected, correctAnswerText, explanation) {
   const feedback = document.getElementById(`feedback${qIndex}`);
+  // Allow answer selection once only
   if (feedback.innerHTML !== "") return;
 
   const inputs = document.getElementsByName(`question${qIndex}`);
@@ -268,7 +282,8 @@ function handleAnswer(qIndex, selected, correctAnswerText, explanation) {
     document.getElementById("sectionPercent").innerText = sectionPercent;
 
     const currentScore = parseInt(document.getElementById("score").innerText);
-    const newScore = currentScore + 1;
+    totalScore++;
+    const newScore = totalScore;
     document.getElementById("score").innerText = newScore;
     const percent = Math.round((newScore / 250) * 100);
     document.getElementById("percent").innerText = percent;
@@ -364,7 +379,9 @@ function initializeQuiz(data) {
       qReview.appendChild(qText);
 
       const selectedAnswerP = document.createElement("p");
-      selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong>`;
+      const selectedIndex = Array.from(document.getElementsByName(`question${i}`)).find(input => input.checked)?.value;
+      const selectedText = selectedIndex !== undefined ? data[i].choices[selectedIndex] : 'None';
+      selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> ${selectedText}`;
       qReview.appendChild(selectedAnswerP);
 
       const correct = document.createElement("p");
