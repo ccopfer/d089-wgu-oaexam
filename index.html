@@ -10,6 +10,10 @@
       background-color: #f4f6f9;
       padding: 20px;
       margin: 0;
+      box-sizing: border-box;
+    }
+    *, *::before, *::after {
+      box-sizing: inherit;
     }
     h1 {
       text-align: center;
@@ -62,12 +66,13 @@
       align-items: center;
     }
     .progress-bar {
-      flex: 1;
+      flex: 1 1 200px;
       margin-right: 20px;
       background-color: #dce3ee;
       border: 1px solid #003058;
       border-radius: 8px;
       overflow: hidden;
+      min-width: 200px;
     }
     .progress-fill {
       height: 24px;
@@ -86,8 +91,12 @@
       padding: 8px 16px;
       border-radius: 6px;
       margin-left: 10px;
+      margin-right: 10px;
       cursor: pointer;
       box-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+    }
+    .section {
+      padding-bottom: 160px; /* extra bottom padding so last question isn't hidden */
     }
   </style>
 </head>
@@ -252,6 +261,5 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 </script>
-
 </body>
 </html>
