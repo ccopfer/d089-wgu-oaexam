@@ -314,6 +314,36 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   function showSection(index) {
+    if (window.quizData && Number.isInteger(index) && document.getElementById(`review${index}`)) {
+      const section = index;
+      const start = section * 50;
+      const end = start + 50;
+      for (let i = start; i < end; i++) {
+        const inputs = document.getElementsByName(`question${i}`);
+        let userAnswerIndex = null;
+        let userAnswer = '<em>Unanswered</em>';
+        inputs.forEach(input => {
+          if (input.checked) {
+            userAnswerIndex = parseInt(input.value);
+            userAnswer = quizData[i].choices[userAnswerIndex];
+          }
+        });
+        const selectedP = document.querySelector(`#review${section} .question:nth-of-type(${i - start + 1}) p:nth-of-type(2)`);
+        if (selectedP) {
+          selectedP.innerHTML = `<strong>Selected Answer:</strong> ${userAnswer}`;
+          if (userAnswerIndex === null) {
+            selectedP.style.fontStyle = "italic";
+            selectedP.style.color = "#333";
+          } else if (quizData[i].choices[userAnswerIndex] !== quizData[i].correct) {
+            selectedP.style.color = "red";
+            selectedP.style.fontWeight = "bold";
+          } else {
+            selectedP.style.color = "black";
+            selectedP.style.fontWeight = "bold";
+          }
+        }
+      }
+    }
     window.scrollTo(0, 0);
     const isReview = document.getElementById(`review${index}`);
     const progressBar = document.getElementById("progress-container");
