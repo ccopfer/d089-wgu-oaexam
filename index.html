@@ -240,7 +240,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     for (let i = start; i < end; i++) {
       const q = quizData[i];
-      let userAnswer = '<em>Unanswered</em>';
+      let userAnswer = '';
       let userAnswerIndex = null;
       const inputs = document.getElementsByName(`question${i}`);
       inputs.forEach(input => {
@@ -259,10 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const selectedAnswerP = document.createElement("p");
       selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> ${userAnswer}`;
-      if (userAnswerIndex === null) {
-        selectedAnswerP.style.fontStyle = "italic";
-        selectedAnswerP.style.color = "#333";
-      } else if (quizData[i].choices[userAnswerIndex] !== q.correct) {
+      if (userAnswerIndex !== null && quizData[i].choices[userAnswerIndex] !== q.correct) {
         selectedAnswerP.style.color = "red";
         selectedAnswerP.style.fontWeight = "bold";
       } else {
