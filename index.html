@@ -136,8 +136,17 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("start-container").style.display = "none";
       document.getElementById("quiz").style.display = "block";
       document.getElementById("progress-container").style.display = "block";
-      document.getElementById("sectionScore").innerText = 0;
-      document.getElementById("sectionPercent").innerText = 0;
+      const start = index * 50;
+    const end = start + 50;
+    let sectionCorrect = 0;
+    for (let i = start; i < end; i++) {
+      const selected = document.querySelector(`input[name='question${i}']:checked`);
+      if (selected && quizData[i].choices[selected.value] === quizData[i].correct) {
+        sectionCorrect++;
+      }
+    }
+    document.getElementById("sectionScore").innerText = sectionCorrect;
+    document.getElementById("sectionPercent").innerText = Math.round((sectionCorrect / 50) * 100);
 
       fetch('quiz-data.json')
         .then(response => response.json())
@@ -304,8 +313,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       const sectionPercent = Math.round((sectionCorrect / 50) * 100);
       document.getElementById(`reviewSectionScore${section}`).innerText = sectionCorrect;
+      document.getElementById(`reviewPercentScore${section}`).innerText = sectionPercent;
       document.getElementById(`reviewTotalScore${section}`).innerText = score;
-      document.getElementById(`reviewPercentScore${section}`).innerText = Math.round((score / 250) * 100);
       showSection(section + 1);
     };
     reviewDiv.appendChild(continueBtn);
