@@ -218,6 +218,60 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       quizContainer.appendChild(sectionDiv);
+
+      const reviewDiv = document.createElement("div");
+      reviewDiv.className = "section";
+      reviewDiv.id = `review${section}`;
+      reviewDiv.style.display = "none";
+
+      const reviewTitle = document.createElement("h2");
+      reviewTitle.innerText = `Section ${section + 1} Review`;
+      reviewDiv.appendChild(reviewTitle);
+
+      const summary = document.createElement("p");
+      summary.innerHTML = `Section Score: <span id='sectionScore${section}'>0</span>/50` +
+                          ` | Total Score: <span id='totalScore${section}'>0</span>/250` +
+                          ` | Percentage: <span id='percentScore${section}'>0</span>%`;
+      reviewDiv.appendChild(summary);
+
+      for (let i = start; i < end; i++) {
+        const q = quizData[i];
+        const questionDiv = document.createElement("div");
+        questionDiv.className = "question";
+
+        const questionText = document.createElement("p");
+        questionText.innerHTML = `<strong>Q${i + 1}:</strong> ${q.question}`;
+        questionDiv.appendChild(questionText);
+
+        const correctAnswer = document.createElement("p");
+        correctAnswer.innerHTML = `<strong>Correct Answer:</strong> ${q.correct}`;
+        questionDiv.appendChild(correctAnswer);
+
+        const explanation = document.createElement("p");
+        explanation.innerHTML = `<strong>Explanation:</strong> ${q.explanation}`;
+        questionDiv.appendChild(explanation);
+
+        const userInput = document.querySelector(`input[name='question${i}']:checked`);
+        if (userInput && quizData[i].choices[userInput.value] !== q.correct) {
+          const userWrong = document.createElement("p");
+          userWrong.innerHTML = `<strong>Your Answer:</strong> ${quizData[i].choices[userInput.value]}`;
+          userWrong.style.color = "red";
+          questionDiv.appendChild(userWrong);
+        }
+
+        reviewDiv.appendChild(questionDiv);
+      }
+
+      const continueBtn = document.createElement("button");
+      continueBtn.innerText = "Continue to Next Section";
+      continueBtn.style = "background-color:#003058;color:white;padding:8px 16px;border:none;border-radius:6px;margin:20px auto;display:block;cursor:pointer;";
+      continueBtn.onclick = () => {
+        reviewDiv.style.display = "none";
+        showSection(section + 1);
+      };
+      reviewDiv.appendChild(continueBtn);
+
+      quizContainer.appendChild(reviewDiv);
     }
 
     updateNavButtons();
