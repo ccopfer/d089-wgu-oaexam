@@ -55,8 +55,15 @@
       font-size: 1.1rem;
       display: none;
     }
+    .progress-flex {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+    }
     .progress-bar {
-      width: 100%;
+      flex: 1;
+      margin-right: 20px;
       background-color: #dce3ee;
       border: 1px solid #003058;
       border-radius: 8px;
@@ -72,13 +79,15 @@
       line-height: 24px;
       transition: width 0.5s;
     }
-    .section-nav-buttons {
-      position: sticky;
-      bottom: 80px;
-      background-color: #f4f6f9;
-      padding: 10px;
-      text-align: center;
-      z-index: 999;
+    .progress-nav button {
+      background-color: #003058;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      margin-left: 10px;
+      cursor: pointer;
+      box-shadow: 1px 1px 4px rgba(0,0,0,0.1);
     }
   </style>
 </head>
@@ -93,15 +102,26 @@
 
   <div id="quiz" style="display:none;"></div>
   <div class="progress-container" id="progress-container">
-    <p>Score: <span id="score">0</span>/250 (<span id="percent">0</span>%)</p>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progress-fill"></div>
+    <div class="progress-flex">
+      <div style="flex:1">
+        <p>Score: <span id="score">0</span>/250 (<span id="percent">0</span>%)</p>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+      <div class="progress-nav">
+        <button id="prev-button">Previous Section</button>
+        <button id="next-button">Next Section</button>
+      </div>
     </div>
   </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const startBtn = document.getElementById("start-button");
+  const prevBtn = document.getElementById("prev-button");
+  const nextBtn = document.getElementById("next-button");
+
   if (startBtn) {
     startBtn.addEventListener("click", function() {
       document.getElementById("start-container").style.display = "none";
@@ -179,38 +199,31 @@ document.addEventListener("DOMContentLoaded", () => {
         sectionDiv.appendChild(questionDiv);
       });
 
-      const navDiv = document.createElement("div");
-      navDiv.className = "section-nav-buttons";
-
-      if (section > 0) {
-        const prevBtn = document.createElement("button");
-        prevBtn.innerText = "Previous Section";
-        prevBtn.onclick = () => showSection(section - 1);
-        prevBtn.style.marginRight = "10px";
-        navDiv.appendChild(prevBtn);
-      }
-
-      if (section < sections - 1) {
-        const nextBtn = document.createElement("button");
-        nextBtn.innerText = "Next Section";
-        nextBtn.onclick = () => showSection(section + 1);
-        navDiv.appendChild(nextBtn);
-      }
-
-      sectionDiv.appendChild(navDiv);
       quizContainer.appendChild(sectionDiv);
     }
-  }
+
+    showSection(0);
+    updateNavButtons();
+  };
 
   function showSection(index) {
     const sections = document.querySelectorAll(".section");
+    if (index < 0 || index >= sections.length) return;
     sections.forEach((sec, i) => {
       sec.style.display = i === index ? "block" : "none";
     });
     currentSectionIndex = index;
     window.scrollTo(0, 0);
-    document.getElementById("progress-container").style.display = "block";
+    updateNavButtons();
   }
+
+  function updateNavButtons() {
+    prevBtn.style.display = currentSectionIndex > 0 ? "inline-block" : "none";
+    nextBtn.style.display = currentSectionIndex < 4 ? "inline-block" : "none";
+  }
+
+  prevBtn.addEventListener("click", () => showSection(currentSectionIndex - 1));
+  nextBtn.addEventListener("click", () => showSection(currentSectionIndex + 1));
 
   function handleAnswer(qIndex, selected, correctAnswerText, explanation) {
     const feedback = document.getElementById(`feedback${qIndex}`);
