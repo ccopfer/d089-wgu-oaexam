@@ -104,6 +104,7 @@
   </div>
 
   <div id="quiz" style="display:none;"></div>
+  <div id="bottom-ui" style="display:none;">
   <div class="progress-container">
   <div class="nav-buttons" style="margin-bottom: 10px;">
     <button id="prevBtn">Previous Section</button>
@@ -117,6 +118,7 @@
 
   
 <script>
+let quizData = [];
 document.addEventListener("DOMContentLoaded", () => {
 
   // Navigation control
@@ -132,7 +134,10 @@ document.addEventListener("DOMContentLoaded", () => {
     startBtn.addEventListener("click", function() {
       document.getElementById("start-container").style.display = "none";
       document.getElementById("quiz").style.display = "block";
+      document.getElementById("bottom-ui").style.display = "block";
       fetch('quiz-data.json')
+        .then(response => response.json())
+        .then(data => { quizData = data; initializeQuiz(data); })
         .then(response => response.json())
         .then(data => initializeQuiz(data))
         .catch(error => console.error('Error loading quiz data:', error));
