@@ -213,6 +213,126 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 });
+function initializeQuiz(data) {
+  const quizContainer = document.getElementById("quiz");
+  quizContainer.innerHTML = "";
+  const sections = 5;
+  const questionsPerSection = 50;
+
+  for (let section = 0; section < sections; section++) {
+    const sectionDiv = document.createElement("div");
+    sectionDiv.className = "section";
+    sectionDiv.id = `section${section}`;
+    sectionDiv.style.display = section === 0 ? "block" : "none";
+
+    const start = section * questionsPerSection;
+    const end = start + questionsPerSection;
+    const sectionData = data.slice(start, end);
+
+    const sectionTitle = document.createElement("h2");
+    sectionTitle.innerText = `Section ${section + 1}`;
+    sectionDiv.appendChild(sectionTitle);
+
+    sectionData.forEach((q, idx) => {
+      const qIndex = start + idx;
+      const questionDiv = document.createElement("div");
+      questionDiv.className = "question";
+
+      const questionText = document.createElement("p");
+      questionText.innerHTML = `<strong>Q${qIndex + 1}:</strong> ${q.question}`;
+      questionDiv.appendChild(questionText);
+
+      const choicesDiv = document.createElement("div");
+      choicesDiv.className = "choices";
+
+      q.choices.forEach((choice, choiceIdx) => {
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = `question${qIndex}`;
+        input.value = choiceIdx;
+        input.style.marginRight = "10px";
+        input.onclick = () => handleAnswer(qIndex, choiceIdx, q.correct, q.explanation);
+        label.appendChild(input);
+        label.append(` ${choice}`);
+        choicesDiv.appendChild(label);
+      });
+
+      const feedback = document.createElement("div");
+      feedback.className = "feedback";
+      feedback.id = `feedback${qIndex}`;
+
+      questionDiv.appendChild(choicesDiv);
+      questionDiv.appendChild(feedback);
+      sectionDiv.appendChild(questionDiv);
+    });
+
+    quizContainer.appendChild(sectionDiv);
+
+    const reviewDiv = document.createElement("div");
+    reviewDiv.className = "section";
+    reviewDiv.id = `review${section}`;
+    reviewDiv.style.display = "none";
+
+    const reviewHeader = document.createElement("h2");
+    reviewHeader.innerText = `Section ${section + 1} Review`;
+    reviewDiv.appendChild(reviewHeader);
+
+    const scoreSummary = document.createElement("p");
+    scoreSummary.innerHTML = `Section Score: <span id='reviewSectionScore${section}'>0</span>/50 (<span id='reviewPercentScore${section}'>0</span>%) | Total Score: <span id='reviewTotalScore${section}'>0</span>/250`;
+    reviewDiv.appendChild(scoreSummary);
+
+    for (let i = start; i < end; i++) {
+      const q = data[i];
+      const qReview = document.createElement("div");
+      qReview.className = "review-question";
+
+      const qText = document.createElement("p");
+      qText.innerHTML = `<strong>Q${i + 1}:</strong> ${q.question}`;
+      qReview.appendChild(qText);
+
+      const selectedAnswerP = document.createElement("p");
+      const selectedIndex = userAnswers[i];
+      const selectedText = (selectedIndex !== undefined && q.choices[selectedIndex]) ? q.choices[selectedIndex] : 'None';
+      selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> ${selectedText}`;
+      if (selectedText !== 'None' && selectedText !== q.correct) {
+        selectedAnswerP.style.color = "red";
+        selectedAnswerP.style.fontWeight = "bold";
+      }
+      qReview.appendChild(selectedAnswerP);
+
+      const correct = document.createElement("p");
+      correct.innerHTML = `<strong>Correct Answer:</strong> ${q.correct}`;
+      if (selectedText !== 'None' && selectedText !== q.correct) {
+        correct.style.color = "green";
+        correct.style.fontWeight = "bold";
+      }
+      qReview.appendChild(correct);
+
+      const explanation = document.createElement("p");
+      explanation.innerHTML = `<strong>Explanation:</strong> ${q.explanation}`;
+      qReview.appendChild(explanation);
+
+      reviewDiv.appendChild(qReview);
+    }
+
+    const printBtn = document.createElement("button");
+    printBtn.innerText = "Print Section Review";
+    printBtn.style = "background-color:#003058;color:white;padding:8px 16px;border:none;border-radius:6px;margin:20px auto;display:block;cursor:pointer;";
+    printBtn.onclick = () => window.print();
+    reviewDiv.appendChild(printBtn);
+
+    quizContainer.appendChild(reviewDiv);
+  }
+}
+
+function showSection(index) {
+  const sections = document.querySelectorAll(".section");
+  sections.forEach((sec, i) => {
+    sec.style.display = i === index ? "block" : "none";
+  });
+  currentSectionIndex = index;
+}
 </script>
 </body>
 </html>
