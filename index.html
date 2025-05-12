@@ -204,7 +204,8 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .then((data) => {
         quizData = data;
-        // Insert your call to initializeQuiz(data) and showSection(0) here if not already declared
+        initializeQuiz(data);
+        showSection(0);
       })
       .catch((err) => {
         console.error("Quiz load failed:", err);
