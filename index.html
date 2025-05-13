@@ -348,7 +348,10 @@ function showSection(index) {
   if (index >= 5 && !document.getElementById(`review${index - 5}`)) {
     renderReview(index - 5);
   }
-  $1currentSectionIndex = index;
+  sections.forEach((sec, i) => {
+    sec.style.display = i === index ? "block" : "none";
+  });
+  currentSectionIndex = index;
 }
 function renderReview(section) {
   const start = section * 50;
