@@ -360,7 +360,11 @@ function initializeQuiz(data) {
       qReview.appendChild(qText);
 
       const selectedAnswerP = document.createElement("p");
-      const selectedIndex = userAnswers[i];
+      const selectedInput = document.querySelector(`input[name='question${i}']:checked`);
+      const selectedIndex = selectedInput ? parseInt(selectedInput.value) : undefined;
+      if (selectedIndex !== undefined) {
+        userAnswers[i] = selectedIndex;
+      }
       const selectedText = (selectedIndex !== undefined && q.choices[selectedIndex]) ? q.choices[selectedIndex] : 'None';
       selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> ${selectedText}`;
       if (selectedText !== 'None' && selectedText !== q.correct) {
