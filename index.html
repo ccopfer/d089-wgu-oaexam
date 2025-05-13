@@ -301,11 +301,16 @@ function initializeQuiz(data) {
       qReview.appendChild(qText);
 
       const selectedAnswerP = document.createElement("p");
-      const selectedInput = document.querySelector(`input[name='question${i}']:checked`);
-      const selectedIndex = selectedInput ? parseInt(selectedInput.value) : undefined;
-      userAnswers[i] = selectedIndex;
+      const selectedIndex = userAnswers[i];
       const selectedText = (selectedIndex !== undefined && q.choices[selectedIndex]) ? q.choices[selectedIndex] : 'None';
       selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> ${selectedText}`;
+      if (selectedText !== 'None' && selectedText !== q.correct) {
+        selectedAnswerP.style.color = "red";
+        selectedAnswerP.style.fontWeight = "bold";
+      } else {
+        selectedAnswerP.style.color = "black";
+        selectedAnswerP.style.fontWeight = "normal";
+      }
       if (selectedText !== 'None' && selectedText !== q.correct) {
         selectedAnswerP.style.color = "red";
         selectedAnswerP.style.fontWeight = "bold";
@@ -314,6 +319,7 @@ function initializeQuiz(data) {
 
       const correct = document.createElement("p");
       correct.innerHTML = `<strong>Correct Answer:</strong> ${q.correct}`;
+      correct.style.marginTop = "5px";
       if (selectedText !== 'None' && selectedText !== q.correct) {
         correct.style.color = "green";
         correct.style.fontWeight = "bold";
