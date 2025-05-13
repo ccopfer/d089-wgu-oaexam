@@ -107,7 +107,20 @@
       padding: 10px 0;
       margin-bottom: 10px;
     }
-  </style>
+      #back-to-top {
+      position: fixed;
+      right: 20px;
+      bottom: 80px;
+      background-color: #003058;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.2);
+      z-index: 1001;
+    }
+</style>
 </head>
 <body>
   <h1>📘 WGU: D089 Principles of Economics OA Exam Quiz 📘</h1>
@@ -365,5 +378,6 @@ function showSection(index) {
   currentSectionIndex = index;
 }
 </script>
+  <button id="back-to-top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">Back to Top</button>
 </body>
 </html>
