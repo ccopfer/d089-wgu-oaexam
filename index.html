@@ -337,75 +337,9 @@ function initializeQuiz(data) {
 
     quizContainer.appendChild(sectionDiv);
 
-    const reviewDiv = document.createElement("div");
-    reviewDiv.className = "section";
-    reviewDiv.id = `review${section}`;
-    reviewDiv.style.display = "none";
+    
 
-    const reviewHeader = document.createElement("h2");
-    reviewHeader.innerText = `Section ${section + 1} Review`;
-    reviewDiv.appendChild(reviewHeader);
-
-    const scoreSummary = document.createElement("p");
-    scoreSummary.innerHTML = `Section Score: <span id='reviewSectionScore${section}'>0</span>/50 (<span id='reviewPercentScore${section}'>0</span>%) | Total Score: <span id='reviewTotalScore${section}'>0</span>/250`;
-    reviewDiv.appendChild(scoreSummary);
-
-    for (let i = start; i < end; i++) {
-      const q = data[i];
-      const qReview = document.createElement("div");
-      qReview.className = "review-question";
-
-      const qText = document.createElement("p");
-      qText.innerHTML = `<strong>Q${i + 1}:</strong> ${q.question}`;
-      qReview.appendChild(qText);
-
-      const selectedAnswerP = document.createElement("p");
-      let selectedIndex = userAnswers[i];
-      if (selectedIndex === undefined) {
-        const selectedInput = document.querySelector(`input[name='question${i}']:checked`);
-        if (selectedInput) {
-          selectedIndex = parseInt(selectedInput.value);
-          userAnswers[i] = selectedIndex;
-        }
-      }
-      const selectedText = (selectedIndex !== undefined && q.choices[selectedIndex]) ? q.choices[selectedIndex] : 'None';
-      selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> ${selectedText}`;
-      if (selectedText !== 'None' && selectedText !== q.correct) {
-        selectedAnswerP.style.color = "red";
-        selectedAnswerP.style.fontWeight = "bold";
-      } else {
-        selectedAnswerP.style.color = "black";
-        selectedAnswerP.style.fontWeight = "normal";
-      }
-      if (selectedText !== 'None' && selectedText !== q.correct) {
-        selectedAnswerP.style.color = "red";
-        selectedAnswerP.style.fontWeight = "bold";
-      }
-      qReview.appendChild(selectedAnswerP);
-
-      const correct = document.createElement("p");
-      correct.innerHTML = `<strong>Correct Answer:</strong> ${q.correct}`;
-      correct.style.marginTop = "5px";
-      if (selectedText !== 'None' && selectedText !== q.correct) {
-        correct.style.color = "green";
-        correct.style.fontWeight = "bold";
-      }
-      qReview.appendChild(correct);
-
-      const explanation = document.createElement("p");
-      explanation.innerHTML = `<strong>Explanation:</strong> ${q.explanation}`;
-      qReview.appendChild(explanation);
-
-      reviewDiv.appendChild(qReview);
-    }
-
-    const printBtn = document.createElement("button");
-    printBtn.innerText = "Print Section Review";
-    printBtn.style = "background-color:#003058;color:white;padding:8px 16px;border:none;border-radius:6px;margin:20px auto;display:block;cursor:pointer;";
-    printBtn.onclick = () => window.print();
-    reviewDiv.appendChild(printBtn);
-
-    quizContainer.appendChild(reviewDiv);
+    
   }
 }
 
@@ -430,7 +364,82 @@ function showSection(index) {
 
   currentSectionIndex = index;
 }
+function renderReview(section) {
+  const start = section * 50;
+  const end = start + 50;
+  const quizContainer = document.getElementById("quiz");
+  let reviewDiv = document.getElementById(`review${section}`);
+  if (reviewDiv) reviewDiv.remove();
+
+  reviewDiv = document.createElement("div");
+  reviewDiv.className = "section";
+  reviewDiv.id = `review${section}`;
+
+  const reviewHeader = document.createElement("h2");
+  reviewHeader.innerText = `Section ${section + 1} Review`;
+  reviewDiv.appendChild(reviewHeader);
+
+  let sectionCorrect = 0;
+  for (let i = start; i < end; i++) {
+    if (
+      userAnswers[i] !== undefined &&
+      quizData[i].choices[userAnswers[i]] === quizData[i].correct
+    ) {
+      sectionCorrect++;
+    }
+  }
+
+  const scoreSummary = document.createElement("p");
+  scoreSummary.innerHTML = `Section Score: <span id='reviewSectionScore${section}'>${sectionCorrect}</span>/50 (<span id='reviewPercentScore${section}'>${Math.round((sectionCorrect / 50) * 100)}</span>%) | Total Score: <span id='reviewTotalScore${section}'>${score}</span>/250`;
+  reviewDiv.appendChild(scoreSummary);
+
+  for (let i = start; i < end; i++) {
+    const q = quizData[i];
+    const qReview = document.createElement("div");
+    qReview.className = "review-question";
+
+    const qText = document.createElement("p");
+    qText.innerHTML = `<strong>Q${i + 1}:</strong> ${q.question}`;
+    qReview.appendChild(qText);
+
+    const selectedIndex = userAnswers[i];
+    const selectedText = selectedIndex !== undefined ? q.choices[selectedIndex] : 'None';
+
+    const selectedAnswerP = document.createElement("p");
+    selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> ${selectedText}`;
+    if (selectedText !== 'None' && selectedText !== q.correct) {
+      selectedAnswerP.style.color = "red";
+      selectedAnswerP.style.fontWeight = "bold";
+    }
+    qReview.appendChild(selectedAnswerP);
+
+    const correct = document.createElement("p");
+    correct.innerHTML = `<strong>Correct Answer:</strong> ${q.correct}`;
+    if (selectedText !== 'None' && selectedText !== q.correct) {
+      correct.style.color = "green";
+      correct.style.fontWeight = "bold";
+    }
+    qReview.appendChild(correct);
+
+    const explanation = document.createElement("p");
+    explanation.innerHTML = `<strong>Explanation:</strong> ${q.explanation}`;
+    qReview.appendChild(explanation);
+
+    reviewDiv.appendChild(qReview);
+  }
+
+  const printBtn = document.createElement("button");
+  printBtn.innerText = "Print Section Review";
+  printBtn.style = "background-color:#003058;color:white;padding:8px 16px;border:none;border-radius:6px;margin:20px auto;display:block;cursor:pointer;";
+  printBtn.onclick = () => window.print();
+  reviewDiv.appendChild(printBtn);
+
+  quizContainer.appendChild(reviewDiv);
+  currentSectionIndex = section + 5;
+  showSection(currentSectionIndex);
+}
 </script>
   <button id="back-to-top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">Back to Top</button>
 </body>
 </html>
+
