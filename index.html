@@ -342,11 +342,7 @@ function initializeQuiz(data) {
 
     quizContainer.appendChild(sectionDiv);
 
-    const continueBtn = document.createElement("button");
-    continueBtn.innerText = "Continue to Review";
-    continueBtn.style = "background-color:#003058;color:white;padding:8px 16px;border:none;border-radius:6px;margin:20px auto;display:block;cursor:pointer;";
-    continueBtn.onclick = () => renderReview(section);
-    sectionDiv.appendChild(continueBtn);
+    
 
     
   }
@@ -470,7 +466,12 @@ function renderReview(section) {
   reviewDiv.appendChild(printBtn);
 
   document.getElementById("quiz").appendChild(reviewDiv);
-  showSection(section + 5); // display review section after last quiz section
+  renderedReview = section + 5;
+  currentSectionIndex = renderedReview;
+  const sections = document.querySelectorAll(".section");
+  sections.forEach((sec, i) => {
+    sec.style.display = i === renderedReview ? "block" : "none";
+  });
 }
 </script>
   <button id="back-to-top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">Back to Top</button>
