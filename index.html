@@ -120,7 +120,33 @@
       box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.2);
       z-index: 1001;
     }
-</style>
+    .review-question {
+      border: none;
+      border-bottom: 1px solid #ccc;
+      padding: 8px 0;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .review-question p {
+      margin: 4px 0;
+    }
+    @media (min-width: 768px) {
+      .review-question {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 20px;
+        align-items: flex-start;
+      }
+      .review-question p:first-child {
+        flex-basis: 100%;
+      }
+      .review-question p {
+        flex: 1 1 45%;
+      }
+    }
+  </style>
 </head>
 <body>
   <h1>📘 WGU: D089 Principles of Economics OA Exam Quiz 📘</h1>
