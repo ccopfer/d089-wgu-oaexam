@@ -344,6 +344,7 @@ function initializeQuiz(data) {
 }
 
 function showSection(index) {
+  window.scrollTo(0, 0);
   const sections = document.querySelectorAll(".section");
   sections.forEach((sec, i) => {
     sec.style.display = i === index ? "block" : "none";
