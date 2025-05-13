@@ -344,25 +344,11 @@ function initializeQuiz(data) {
 }
 
 function showSection(index) {
-  window.scrollTo(0, 0);
   const sections = document.querySelectorAll(".section");
-  sections.forEach((sec, i) => {
-    sec.style.display = i === index ? "block" : "none";
-  });
-
-  const sectionStart = index * 50;
-  const sectionEnd = sectionStart + 50;
-  let sectionCorrect = 0;
-  for (let i = sectionStart; i < sectionEnd; i++) {
-    const selected = document.querySelector(`input[name='question${i}']:checked`);
-    if (selected && quizData[i].choices[selected.value] === quizData[i].correct) {
-      sectionCorrect++;
-    }
+  if (index >= 5 && !document.getElementById(`review${index - 5}`)) {
+    renderReview(index - 5);
   }
-  document.getElementById("sectionScore").innerText = sectionCorrect;
-  document.getElementById("sectionPercent").innerText = Math.round((sectionCorrect / 50) * 100);
-
-  currentSectionIndex = index;
+  $1currentSectionIndex = index;
 }
 function renderReview(section) {
   const start = section * 50;
