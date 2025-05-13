@@ -337,6 +337,12 @@ function initializeQuiz(data) {
 
     quizContainer.appendChild(sectionDiv);
 
+    const reviewDiv = document.createElement("div");
+    reviewDiv.className = "section";
+    reviewDiv.id = `review${section}`;
+    reviewDiv.style.display = "none";
+    quizContainer.appendChild(reviewDiv);
+
     
 
     
