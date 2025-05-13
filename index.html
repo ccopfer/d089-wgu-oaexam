@@ -353,6 +353,8 @@ function initializeQuiz(data) {
 }
 
 function showSection(index) {
+  const progressBar = document.getElementById("progress-container");
+  progressBar.style.display = index === 0 ? "none" : "block";
   const prevBtn = document.getElementById("prev-button");
   const nextBtn = document.getElementById("next-button");
   const continueBtns = document.querySelectorAll(".section button");
