@@ -188,6 +188,11 @@ function handleAnswer(qIndex, selected, correctAnswerText, explanation) {
   progressFill.innerText = percent + "%";
 }
 document.addEventListener("DOMContentLoaded", () => {
+  const prevBtn = document.getElementById("prev-button");
+  const nextBtn = document.getElementById("next-button");
+
+  prevBtn.addEventListener("click", () => showSection(currentSectionIndex - 1));
+  nextBtn.addEventListener("click", () => showSection(currentSectionIndex + 1));
   const startBtn = document.getElementById("start-button");
   const quizContainer = document.getElementById("quiz");
   const progressBar = document.getElementById("progress-container");
@@ -203,7 +208,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return res.json();
       })
       .then((data) => {
-        quizData = data;
+        quizData = [...data];
+        quizData.sort(() => Math.random() - 0.5);
         initializeQuiz(data);
         showSection(0);
       })
