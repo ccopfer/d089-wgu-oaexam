@@ -174,7 +174,7 @@
     <button id="start-button" style="background-color:#003058;color:white;padding:12px 24px;font-size:1.2rem;border:none;border-radius:8px;cursor:pointer;box-shadow:2px 2px 6px rgba(0,0,0,0.2);">Start Exam</button>
   </div>
   <div id="quiz" style="display:none;"></div>
-  <div class="progress-container" id="progress-container">
+  <div class="progress-container" id="progress-container" style="display: none;">
     <div class="progress-flex">
       <div style="flex:1">
         <p>Section Score: <span id="sectionScore">0</span>/50 (<span id="sectionPercent">0</span>%) | Total Score: <span id="score">0</span>/250 (<span id="percent">0</span>%)</p>
@@ -261,6 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const progressBar = document.getElementById("progress-container");
 
   startBtn.addEventListener("click", () => {
+    document.getElementById("progress-container").style.display = "block";
     document.getElementById("start-container").style.display = "none";
     quizContainer.style.display = "block";
     progressBar.style.display = "block";
@@ -473,3 +474,4 @@ function renderReview(section) {
   <button id="back-to-top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">Back to Top</button>
 </body>
 </html>
+
