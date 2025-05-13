@@ -250,7 +250,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const prevBtn = document.getElementById("prev-button");
   const nextBtn = document.getElementById("next-button");
 
-  prevBtn.addEventListener("click", () => showSection(currentSectionIndex - 1));
+  prevBtn.addEventListener("click", () => {
+    if (currentSectionIndex > 0) {
+      showSection(currentSectionIndex - 1);
+    }
+  });
   nextBtn.addEventListener("click", () => showSection(currentSectionIndex + 1));
   const startBtn = document.getElementById("start-button");
   const quizContainer = document.getElementById("quiz");
@@ -337,43 +341,73 @@ function initializeQuiz(data) {
 
     quizContainer.appendChild(sectionDiv);
 
-    const reviewDiv = document.createElement("div");
-    reviewDiv.className = "section";
-    reviewDiv.id = `review${section}`;
-    reviewDiv.style.display = "none";
-    quizContainer.appendChild(reviewDiv);
-
-    
+    const continueBtn = document.createElement("button");
+    continueBtn.innerText = "Continue to Review";
+    continueBtn.style = "background-color:#003058;color:white;padding:8px 16px;border:none;border-radius:6px;margin:20px auto;display:block;cursor:pointer;";
+    continueBtn.onclick = () => renderReview(section);
+    sectionDiv.appendChild(continueBtn);
 
     
   }
 }
 
 function showSection(index) {
+  const prevBtn = document.getElementById("prev-button");
+  const nextBtn = document.getElementById("next-button");
+  const continueBtns = document.querySelectorAll(".section button");
   const sections = document.querySelectorAll(".section");
-  if (index >= 5 && !document.getElementById(`review${index - 5}`)) {
-    renderReview(index - 5);
-  }
+
+  window.scrollTo(0, 0);
   sections.forEach((sec, i) => {
     sec.style.display = i === index ? "block" : "none";
   });
+
+  // Toggle button visibility based on section type
+  if (index < 5) {
+    nextBtn.style.display = "none";
+    const reviewBtn = document.querySelector(`#section${index} button`);
+    if (reviewBtn) reviewBtn.style.display = "block";
+  } else {
+    nextBtn.style.display = "inline-block";
+  }
+
+  const sectionStart = index * 50;
+  const sectionEnd = sectionStart + 50;
+  let sectionCorrect = 0;
+  for (let i = sectionStart; i < sectionEnd; i++) {
+    const selected = document.querySelector(`input[name='question${i}']:checked`);
+    if (selected && quizData[i].choices[selected.value] === quizData[i].correct) {
+      sectionCorrect++;
+    }
+  }
+  document.getElementById("sectionScore").innerText = sectionCorrect;
+  document.getElementById("sectionPercent").innerText = Math.round((sectionCorrect / 50) * 100);
+
   currentSectionIndex = index;
+  if (index === 0) {
+    prevBtn.style.display = "none";
+  } else {
+    prevBtn.style.display = "inline-block";
+  }
 }
+
 function renderReview(section) {
   const start = section * 50;
   const end = start + 50;
-  const quizContainer = document.getElementById("quiz");
-  let reviewDiv = document.getElementById(`review${section}`);
-  
+  const reviewDivId = `review${section}`;
 
-  reviewDiv = document.createElement("div");
+  let existing = document.getElementById(reviewDivId);
+  if (existing) existing.remove();
+
+  const reviewDiv = document.createElement("div");
   reviewDiv.className = "section";
-  reviewDiv.id = `review${section}`;
+  reviewDiv.id = reviewDivId;
 
   const reviewHeader = document.createElement("h2");
   reviewHeader.innerText = `Section ${section + 1} Review`;
   reviewDiv.appendChild(reviewHeader);
 
+  const scoreSummary = document.createElement("p");
   let sectionCorrect = 0;
   for (let i = start; i < end; i++) {
     if (
@@ -383,9 +417,8 @@ function renderReview(section) {
       sectionCorrect++;
     }
   }
-
-  const scoreSummary = document.createElement("p");
-  scoreSummary.innerHTML = `Section Score: <span id='reviewSectionScore${section}'>${sectionCorrect}</span>/50 (<span id='reviewPercentScore${section}'>${Math.round((sectionCorrect / 50) * 100)}</span>%) | Total Score: <span id='reviewTotalScore${section}'>${score}</span>/250`;
+  const percent = Math.round((sectionCorrect / 50) * 100);
+  scoreSummary.innerHTML = `Section Score: <span id='reviewSectionScore${section}'>${sectionCorrect}</span>/50 (<span id='reviewPercentScore${section}'>${percent}</span>%) | Total Score: <span id='reviewTotalScore${section}'>${score}</span>/250`;
   reviewDiv.appendChild(scoreSummary);
 
   for (let i = start; i < end; i++) {
@@ -405,11 +438,15 @@ function renderReview(section) {
     if (selectedText !== 'None' && selectedText !== q.correct) {
       selectedAnswerP.style.color = "red";
       selectedAnswerP.style.fontWeight = "bold";
+    } else {
+      selectedAnswerP.style.color = "black";
+      selectedAnswerP.style.fontWeight = "normal";
     }
     qReview.appendChild(selectedAnswerP);
 
     const correct = document.createElement("p");
     correct.innerHTML = `<strong>Correct Answer:</strong> ${q.correct}`;
+    correct.style.marginTop = "5px";
     if (selectedText !== 'None' && selectedText !== q.correct) {
       correct.style.color = "green";
       correct.style.fontWeight = "bold";
@@ -429,10 +466,10 @@ function renderReview(section) {
   printBtn.onclick = () => window.print();
   reviewDiv.appendChild(printBtn);
 
-  quizContainer.appendChild(reviewDiv);
+  document.getElementById("quiz").appendChild(reviewDiv);
+  showSection(section + 5); // display review section after last quiz section
 }
 </script>
   <button id="back-to-top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">Back to Top</button>
 </body>
 </html>
-
