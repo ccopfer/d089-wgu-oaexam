@@ -210,7 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((data) => {
         quizData = [...data];
         quizData.sort(() => Math.random() - 0.5);
-        initializeQuiz(data);
+        initializeQuiz(quizData);
         showSection(0);
       })
       .catch((err) => {
