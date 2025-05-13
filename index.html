@@ -250,7 +250,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const prevBtn = document.getElementById("prev-button");
   const nextBtn = document.getElementById("next-button");
 
-  prevBtn.addEventListener("click", () => showSection(currentSectionIndex - 1));
+  prevBtn.addEventListener("click", () => {
+    if (currentSectionIndex > 0) {
+      showSection(currentSectionIndex - 1);
+    }
+  });
   nextBtn.addEventListener("click", () => showSection(currentSectionIndex + 1));
   const startBtn = document.getElementById("start-button");
   const quizContainer = document.getElementById("quiz");
@@ -337,84 +341,35 @@ function initializeQuiz(data) {
 
     quizContainer.appendChild(sectionDiv);
 
-    const reviewDiv = document.createElement("div");
-    reviewDiv.className = "section";
-    reviewDiv.id = `review${section}`;
-    reviewDiv.style.display = "none";
+    const continueBtn = document.createElement("button");
+    continueBtn.innerText = "Continue to Review";
+    continueBtn.style = "background-color:#003058;color:white;padding:8px 16px;border:none;border-radius:6px;margin:20px auto;display:block;cursor:pointer;";
+    continueBtn.onclick = () => renderReview(section);
+    sectionDiv.appendChild(continueBtn);
 
-    const reviewHeader = document.createElement("h2");
-    reviewHeader.innerText = `Section ${section + 1} Review`;
-    reviewDiv.appendChild(reviewHeader);
-
-    const scoreSummary = document.createElement("p");
-    scoreSummary.innerHTML = `Section Score: <span id='reviewSectionScore${section}'>0</span>/50 (<span id='reviewPercentScore${section}'>0</span>%) | Total Score: <span id='reviewTotalScore${section}'>0</span>/250`;
-    reviewDiv.appendChild(scoreSummary);
-
-    for (let i = start; i < end; i++) {
-      const q = data[i];
-      const qReview = document.createElement("div");
-      qReview.className = "review-question";
-
-      const qText = document.createElement("p");
-      qText.innerHTML = `<strong>Q${i + 1}:</strong> ${q.question}`;
-      qReview.appendChild(qText);
-
-      const selectedAnswerP = document.createElement("p");
-      let selectedIndex = userAnswers[i];
-      if (selectedIndex === undefined) {
-        const selectedInput = document.querySelector(`input[name='question${i}']:checked`);
-        if (selectedInput) {
-          selectedIndex = parseInt(selectedInput.value);
-          userAnswers[i] = selectedIndex;
-        }
-      }
-      const selectedText = (selectedIndex !== undefined && q.choices[selectedIndex]) ? q.choices[selectedIndex] : 'None';
-      selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> ${selectedText}`;
-      if (selectedText !== 'None' && selectedText !== q.correct) {
-        selectedAnswerP.style.color = "red";
-        selectedAnswerP.style.fontWeight = "bold";
-      } else {
-        selectedAnswerP.style.color = "black";
-        selectedAnswerP.style.fontWeight = "normal";
-      }
-      if (selectedText !== 'None' && selectedText !== q.correct) {
-        selectedAnswerP.style.color = "red";
-        selectedAnswerP.style.fontWeight = "bold";
-      }
-      qReview.appendChild(selectedAnswerP);
-
-      const correct = document.createElement("p");
-      correct.innerHTML = `<strong>Correct Answer:</strong> ${q.correct}`;
-      correct.style.marginTop = "5px";
-      if (selectedText !== 'None' && selectedText !== q.correct) {
-        correct.style.color = "green";
-        correct.style.fontWeight = "bold";
-      }
-      qReview.appendChild(correct);
-
-      const explanation = document.createElement("p");
-      explanation.innerHTML = `<strong>Explanation:</strong> ${q.explanation}`;
-      qReview.appendChild(explanation);
-
-      reviewDiv.appendChild(qReview);
-    }
-
-    const printBtn = document.createElement("button");
-    printBtn.innerText = "Print Section Review";
-    printBtn.style = "background-color:#003058;color:white;padding:8px 16px;border:none;border-radius:6px;margin:20px auto;display:block;cursor:pointer;";
-    printBtn.onclick = () => window.print();
-    reviewDiv.appendChild(printBtn);
-
-    quizContainer.appendChild(reviewDiv);
+    
   }
 }
 
 function showSection(index) {
-  window.scrollTo(0, 0);
+  const prevBtn = document.getElementById("prev-button");
+  const nextBtn = document.getElementById("next-button");
+  const continueBtns = document.querySelectorAll(".section button");
   const sections = document.querySelectorAll(".section");
+
+  window.scrollTo(0, 0);
   sections.forEach((sec, i) => {
     sec.style.display = i === index ? "block" : "none";
   });
+
+  // Toggle button visibility based on section type
+  if (index < 5) {
+    nextBtn.style.display = "none";
+    const reviewBtn = document.querySelector(`#section${index} button`);
+    if (reviewBtn) reviewBtn.style.display = "block";
+  } else {
+    nextBtn.style.display = "inline-block";
+  }
 
   const sectionStart = index * 50;
   const sectionEnd = sectionStart + 50;
@@ -429,6 +384,90 @@ function showSection(index) {
   document.getElementById("sectionPercent").innerText = Math.round((sectionCorrect / 50) * 100);
 
   currentSectionIndex = index;
+  if (index === 0) {
+    prevBtn.style.display = "none";
+  } else {
+    prevBtn.style.display = "inline-block";
+  }
+}
+
+function renderReview(section) {
+  const start = section * 50;
+  const end = start + 50;
+  const reviewDivId = `review${section}`;
+
+  let existing = document.getElementById(reviewDivId);
+  if (existing) existing.remove();
+
+  const reviewDiv = document.createElement("div");
+  reviewDiv.className = "section";
+  reviewDiv.id = reviewDivId;
+
+  const reviewHeader = document.createElement("h2");
+  reviewHeader.innerText = `Section ${section + 1} Review`;
+  reviewDiv.appendChild(reviewHeader);
+
+  const scoreSummary = document.createElement("p");
+  let sectionCorrect = 0;
+  for (let i = start; i < end; i++) {
+    if (
+      userAnswers[i] !== undefined &&
+      quizData[i].choices[userAnswers[i]] === quizData[i].correct
+    ) {
+      sectionCorrect++;
+    }
+  }
+  const percent = Math.round((sectionCorrect / 50) * 100);
+  scoreSummary.innerHTML = `Section Score: <span id='reviewSectionScore${section}'>${sectionCorrect}</span>/50 (<span id='reviewPercentScore${section}'>${percent}</span>%) | Total Score: <span id='reviewTotalScore${section}'>${score}</span>/250`;
+  reviewDiv.appendChild(scoreSummary);
+
+  for (let i = start; i < end; i++) {
+    const q = quizData[i];
+    const qReview = document.createElement("div");
+    qReview.className = "review-question";
+
+    const qText = document.createElement("p");
+    qText.innerHTML = `<strong>Q${i + 1}:</strong> ${q.question}`;
+    qReview.appendChild(qText);
+
+    const selectedIndex = userAnswers[i];
+    const selectedText = selectedIndex !== undefined ? q.choices[selectedIndex] : 'None';
+
+    const selectedAnswerP = document.createElement("p");
+    selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> ${selectedText}`;
+    if (selectedText !== 'None' && selectedText !== q.correct) {
+      selectedAnswerP.style.color = "red";
+      selectedAnswerP.style.fontWeight = "bold";
+    } else {
+      selectedAnswerP.style.color = "black";
+      selectedAnswerP.style.fontWeight = "normal";
+    }
+    qReview.appendChild(selectedAnswerP);
+
+    const correct = document.createElement("p");
+    correct.innerHTML = `<strong>Correct Answer:</strong> ${q.correct}`;
+    correct.style.marginTop = "5px";
+    if (selectedText !== 'None' && selectedText !== q.correct) {
+      correct.style.color = "green";
+      correct.style.fontWeight = "bold";
+    }
+    qReview.appendChild(correct);
+
+    const explanation = document.createElement("p");
+    explanation.innerHTML = `<strong>Explanation:</strong> ${q.explanation}`;
+    qReview.appendChild(explanation);
+
+    reviewDiv.appendChild(qReview);
+  }
+
+  const printBtn = document.createElement("button");
+  printBtn.innerText = "Print Section Review";
+  printBtn.style = "background-color:#003058;color:white;padding:8px 16px;border:none;border-radius:6px;margin:20px auto;display:block;cursor:pointer;";
+  printBtn.onclick = () => window.print();
+  reviewDiv.appendChild(printBtn);
+
+  document.getElementById("quiz").appendChild(reviewDiv);
+  showSection(section + 5); // display review section after last quiz section
 }
 </script>
   <button id="back-to-top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">Back to Top</button>
