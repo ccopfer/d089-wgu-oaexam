@@ -315,8 +315,7 @@ function renderReview(section) {
     const qReview = document.createElement("div");
     qReview.className = "review-question";
 
-    const isIncorrect = selectedText !== 'None' && selectedText !== q.correct;
-    const qText = document.createElement("p");
+        const qText = document.createElement("p");
     qText.innerHTML = `<strong>Q${i + 1}:</strong> ${q.question}` + (selectedText === 'None' ? " <em style='color:gray'>(Unanswered)</em>" : isIncorrect ? " <em style='color:red'>(Incorrect)</em>" : " <em style='color:green'>(Correct)</em>");
     qReview.appendChild(qText);
 
@@ -324,16 +323,14 @@ function renderReview(section) {
     const selectedText = selectedIndex !== undefined ? q.choices[selectedIndex] : 'None';
 
     const selectedAnswerP = document.createElement("p");
-    const isIncorrect = selectedText !== 'None' && selectedText !== q.correct;
-    if (selectedText === 'None') {
+        if (selectedText === 'None') {
       selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> None`;
     } else if (isIncorrect) {
       selectedAnswerP.innerHTML = `❌ <strong>Selected Answer:</strong> ${selectedText}`;
     } else {
       selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> ${selectedText}`;
     }
-    const isIncorrect = selectedText !== 'None' && selectedText !== q.correct;
-    if (isIncorrect) {
+        if (isIncorrect) {
       
       selectedAnswerP.style.fontWeight = 'bold';
       selectedAnswerP.innerHTML = `❌ <strong>Selected Answer:</strong> ${selectedText}`;
