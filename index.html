@@ -130,8 +130,16 @@
   flex: 1 1 45%;
   margin: 4px 0;
 }
-
-
+.review-question p:nth-child(2) {
+  background: #fff6f6;
+  border-left: 4px solid #e53935;
+  padding-left: 8px;
+}
+.review-question p:nth-child(3) {
+  background: #f1f8e9;
+  border-left: 4px solid #43a047;
+  padding-left: 8px;
+}
 .review-question p:nth-child(4) {
   font-style: italic;
   color: #333;
@@ -315,32 +323,31 @@ function renderReview(section) {
     const qReview = document.createElement("div");
     qReview.className = "review-question";
 
-        const qText = document.createElement("p");
-    qText.innerHTML = `<strong>Q${i + 1}:</strong> ${q.question}` + (selectedText === 'None' ? " <em style='color:gray'>(Unanswered)</em>" : isIncorrect ? " <em style='color:red'>(Incorrect)</em>" : " <em style='color:green'>(Correct)</em>");
+    const qText = document.createElement("p");
+    qText.innerHTML = `<strong>Q${i + 1}:</strong> ${q.question}`;
     qReview.appendChild(qText);
 
     const selectedIndex = userAnswers[i];
     const selectedText = selectedIndex !== undefined ? q.choices[selectedIndex] : 'None';
 
     const selectedAnswerP = document.createElement("p");
-        if (selectedText === 'None') {
-      selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> None`;
-    } else if (isIncorrect) {
-      selectedAnswerP.innerHTML = `❌ <strong>Selected Answer:</strong> ${selectedText}`;
-    } else {
-      selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> ${selectedText}`;
-    }
-        if (isIncorrect) {
-      
+    selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> ${selectedText}`;
+    const isIncorrect = selectedText !== 'None' && selectedText !== q.correct;
+    if (isIncorrect) {
+      selectedAnswerP.style.backgroundColor = '#fff6f6';
+      selectedAnswerP.style.borderLeft = '4px solid #e53935';
+      selectedAnswerP.style.paddingLeft = '8px';
       selectedAnswerP.style.fontWeight = 'bold';
       selectedAnswerP.innerHTML = `❌ <strong>Selected Answer:</strong> ${selectedText}`;
     }
     qReview.appendChild(selectedAnswerP);
 
     const correct = document.createElement("p");
-    correct.innerHTML = `✅ <strong>Correct Answer:</strong> ${q.correct}`;
+    correct.innerHTML = `<strong>Correct Answer:</strong> ${q.correct}`;
     if (isIncorrect) {
-      
+      correct.style.backgroundColor = '#f1f8e9';
+      correct.style.borderLeft = '4px solid #43a047';
+      correct.style.paddingLeft = '8px';
       correct.style.fontWeight = 'bold';
       correct.innerHTML = `✅ <strong>Correct Answer:</strong> ${q.correct}`;
     }
