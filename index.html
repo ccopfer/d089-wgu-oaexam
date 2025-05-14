@@ -309,6 +309,17 @@ function renderReview(section) {
   scoreSummary.innerHTML = `Section Score: <span id='reviewSectionScore${section}'>${sectionCorrect}</span>/50 (<span id='reviewPercentScore${section}'>${Math.round((sectionCorrect / 50) * 100)}</span>%) | Total Score: <span id='reviewTotalScore${section}'>${score}</span>/250`;
   reviewDiv.appendChild(scoreSummary);
 
+  const printBtn = document.createElement("button");
+  printBtn.innerText = "Print Section Review";
+  printBtn.style = "background-color:#003058;color:white;padding:8px 16px;border:none;border-radius:6px;margin:20px auto;display:block;cursor:pointer;";
+  printBtn.onclick = () => window.print();
+  reviewDiv.appendChild(printBtn);
+
+  const reviewPercent = document.getElementById("reviewTotalScore" + section);
+  if (reviewPercent) {
+    reviewPercent.innerText = Math.round((score / 250) * 100);
+  }
+
   for (let i = start; i < end; i++) {
     const q = quizData[i];
     const qReview = document.createElement("div");
