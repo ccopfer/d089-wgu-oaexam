@@ -325,8 +325,10 @@ function showSection(index) {
     progressBar.classList.remove("hidden");
   }
 
-  if (index >= 5) {
-    renderReview(index - 5);
+  const element = sectionElements[index];
+  if (element && element.id && element.id.startsWith("review")) {
+    const reviewNumber = parseInt(element.id.replace("review", ""), 10);
+    renderReview(reviewNumber);
   }
 
   window.scrollTo(0, 0);
