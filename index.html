@@ -252,6 +252,7 @@ function renderReview(section) {
   const quizContainer = document.getElementById("quiz");
   const reviewDiv = document.getElementById(`review${section}`);
   if (!reviewDiv) return;
+  reviewDiv.style.display = "block";
   reviewDiv.innerHTML = "";
 
   const reviewHeader = document.createElement("h2");
@@ -320,7 +321,7 @@ function showSection(index) {
     progressBar.classList.remove("hidden");
   }
 
-  if (index >= 5 && !document.getElementById(`review${index - 5}`).innerHTML.trim()) {
+  if (index >= 5) {
     renderReview(index - 5);
   }
 
