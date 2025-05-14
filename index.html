@@ -111,6 +111,7 @@
       box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.2);
       z-index: 1001;
     }
+  .hidden { display: none !important; }
   </style>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -122,7 +123,7 @@
     <button id="start-button" style="background-color:#003058;color:white;padding:12px 24px;font-size:1.2rem;border:none;border-radius:8px;cursor:pointer;box-shadow:2px 2px 6px rgba(0,0,0,0.2);">Start Exam</button>
   </div>
   <div id="quiz" style="display:none;"></div>
-  <div class="progress-container" id="progress-container" style="display: none;">
+  <div class="progress-container hidden" id="progress-container">
     <div class="progress-flex">
       <div style="flex:1">
         <p>Section Score: <span id="sectionScore">0</span>/50 (<span id="sectionPercent">0</span>%) | Total Score: <span id="score">0</span>/250 (<span id="percent">0</span>%)</p>
@@ -313,7 +314,7 @@ function showSection(index) {
   const progressBar = document.getElementById("progress-container");
   const sections = document.querySelectorAll(".section");
 
-  progressBar.style.removeProperty("display");
+  progressBar.classList.remove("hidden");
   if (index === 0) {
     progressBar.style.display = "none";
   }
@@ -351,7 +352,7 @@ document.addEventListener("DOMContentLoaded", () => {
     startBtn.addEventListener("click", function() {
       document.getElementById("start-container").style.display = "none";
       document.getElementById("quiz").style.display = "block";
-      document.getElementById("progress-container").style.display = "block";
+      document.getElementById("progress-container").classList.remove("hidden");
 
       fetch('quiz-data.json')
         .then(response => response.json())
