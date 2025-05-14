@@ -334,9 +334,7 @@ function renderReview(section) {
     selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> ${selectedText}`;
     const isIncorrect = selectedText !== 'None' && selectedText !== q.correct;
     if (isIncorrect) {
-      selectedAnswerP.style.backgroundColor = '#fff6f6';
-      selectedAnswerP.style.borderLeft = '4px solid #e53935';
-      selectedAnswerP.style.paddingLeft = '8px';
+      
       selectedAnswerP.style.fontWeight = 'bold';
       selectedAnswerP.innerHTML = `❌ <strong>Selected Answer:</strong> ${selectedText}`;
     }
@@ -345,9 +343,7 @@ function renderReview(section) {
     const correct = document.createElement("p");
     correct.innerHTML = `<strong>Correct Answer:</strong> ${q.correct}`;
     if (isIncorrect) {
-      correct.style.backgroundColor = '#f1f8e9';
-      correct.style.borderLeft = '4px solid #43a047';
-      correct.style.paddingLeft = '8px';
+      
       correct.style.fontWeight = 'bold';
       correct.innerHTML = `✅ <strong>Correct Answer:</strong> ${q.correct}`;
     }
