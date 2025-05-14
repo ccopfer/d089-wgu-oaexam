@@ -185,6 +185,7 @@ function handleAnswer(qIndex, selected, correctAnswerText, explanation) {
   progressFill.innerText = percent + "%";
 }
 
+let sectionElements = [];
 function initializeQuiz(data) {
   const quizContainer = document.getElementById("quiz");
   quizContainer.innerHTML = "";
@@ -242,7 +243,9 @@ function initializeQuiz(data) {
     reviewDiv.id = `review${section}`;
     reviewDiv.style.display = "none";
     quizContainer.appendChild(sectionDiv);
+    sectionElements.push(sectionDiv);
     quizContainer.appendChild(reviewDiv);
+    sectionElements.push(reviewDiv);
     reviewDiv.style.display = "none";
   }
 }
@@ -314,7 +317,7 @@ function showSection(index) {
   const prevBtn = document.getElementById("prev-button");
   const nextBtn = document.getElementById("next-button");
   const progressBar = document.getElementById("progress-container");
-  const sections = document.querySelectorAll(".section");
+  // const sections = document.querySelectorAll(".section");
 
   if (index === 0 && document.getElementById("start-container").style.display !== "none") {
     progressBar.classList.add("hidden");
@@ -327,11 +330,11 @@ function showSection(index) {
   }
 
   window.scrollTo(0, 0);
-  sections.forEach((sec, i) => {
+  sectionElements.forEach((sec, i) => {
     sec.style.display = i === index ? "block" : "none";
   });
 
-  nextBtn.style.display = index < sections.length - 1 ? "inline-block" : "none";
+  nextBtn.style.display = index < sectionElements.length - 1 ? "inline-block" : "none";
   prevBtn.style.display = index === 0 ? "none" : "inline-block";
 
   const sectionStart = index * 50;
