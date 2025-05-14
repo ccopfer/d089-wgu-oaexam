@@ -313,10 +313,9 @@ function showSection(index) {
   const progressBar = document.getElementById("progress-container");
   const sections = document.querySelectorAll(".section");
 
+  progressBar.style.removeProperty("display");
   if (index === 0) {
     progressBar.style.display = "none";
-  } else {
-    progressBar.style.display = "block";
   }
 
   if (index >= 5 && !document.getElementById(`review${index - 5}`).innerHTML.trim()) {
