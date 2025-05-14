@@ -605,7 +605,7 @@
     "explanation": "A decrease in aggregate supply leads to cost-push inflation, where rising production costs result in higher prices and reduced output."
   },
   {
-    "question": "What is the definition of nominal GDP?",
+    "question": "What is the  of nominal GDP?",
     "choices": [
       "GDP adjusted for inflation",
       "GDP measured in current prices",
@@ -814,7 +814,7 @@
     "explanation": "The equilibrium price is determined by the point where the quantity of a good demanded by consumers equals the quantity supplied by producers."
   },
   {
-    "question": "What is the definition of economic growth?",
+    "question": "What is the  of economic growth?",
     "choices": [
       "A decrease in the inflation rate",
       "A sustained increase in real GDP",
@@ -1100,7 +1100,7 @@
     "explanation": "The Federal Reserve is the central bank of the United States and is responsible for controlling inflation, managing the money supply, and maintaining overall economic stability."
   },
   {
-    "question": "What is the definition of scarcity?",
+    "question": "What is the  of scarcity?",
     "choices": [
       "The unlimited availability of resources",
       "The limited nature of society\u2019s resources",
@@ -1246,7 +1246,7 @@
     "question": "What is the definition of GDP (Gross Domestic Product)?",
     "choices": [
       "The total value of all foreign investments in a country",
-      "The total value of all goods and services produced within a country\u2019s borders in a given period",
+      "The total value of all goods and services produced within a country's borders in a given period",
       "The value of all exports and imports",
       "The total amount of money circulating in an economy"
     ],
@@ -2026,7 +2026,7 @@
   {
     "question": "What is gross domestic product (GDP)?",
     "choices": [
-      "The total income earned by a country\u2019s residents",
+      "The total income earned by a country's residents",
       "The market value of all goods and services produced within a country during a specific period",
       "The total value of exports minus imports",
       "The sum of all investment and government spending"
