@@ -112,7 +112,39 @@
       z-index: 1001;
     }
   .hidden { display: none !important; }
-  </style>
+  .review-question {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
+  margin-bottom: 10px;
+}
+.review-question p:first-child {
+  flex-basis: 100%;
+  font-weight: bold;
+}
+.review-question p {
+  flex: 1 1 45%;
+  margin: 4px 0;
+}
+.review-question p:nth-child(2) {
+  background: #fff6f6;
+  border-left: 4px solid #e53935;
+  padding-left: 8px;
+}
+.review-question p:nth-child(3) {
+  background: #f1f8e9;
+  border-left: 4px solid #43a047;
+  padding-left: 8px;
+}
+.review-question p:nth-child(4) {
+  font-style: italic;
+  color: #333;
+}
+</style>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WGU: D089 Principles of Economics OA Exam Quiz</title>
