@@ -316,7 +316,9 @@ function showSection(index) {
 
   progressBar.classList.remove("hidden");
   if (index === 0) {
-    progressBar.style.display = "none";
+    progressBar.classList.add("hidden");
+  } else {
+    progressBar.classList.remove("hidden");
   }
 
   if (index >= 5 && !document.getElementById(`review${index - 5}`).innerHTML.trim()) {
