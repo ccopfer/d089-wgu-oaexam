@@ -355,8 +355,8 @@ function renderReview(section) {
 }
 
 function showSection(index) {
-  const prevBtn = document.getElementById("prev-button");
-  const nextBtn = document.getElementById("next-button");
+  const prevBtn = document.getElementById("prev-button") || {};
+  const nextBtn = document.getElementById("next-button") || {};
   const progressBar = document.getElementById("progress-container");
   // const sections = document.querySelectorAll(".section");
 
