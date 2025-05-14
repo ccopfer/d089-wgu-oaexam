@@ -423,10 +423,13 @@ document.addEventListener("DOMContentLoaded", () => {
       showSection(currentSectionIndex - 1);
     }
   });
-  document.getElementById("next-button").addEventListener("click", () => {
+  document.getElementById("next-button").addEventListener("click", function() {
+  if (currentSectionIndex < sectionElements.length - 1) {
     showSection(currentSectionIndex + 1);
-  });
+  }
+});
 });
 </script>
 </body>
 </html>
+
