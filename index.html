@@ -323,7 +323,7 @@ function renderReview(section) {
     const selectedText = selectedIndex !== undefined ? q.choices[selectedIndex] : 'None';
 
     const selectedAnswerP = document.createElement("p");
-    selectedAnswerP.innerHTML = `<strong>Selected Answer:</strong> ${selectedText}`;
+    selectedAnswerP.innerHTML = `✅ <strong>Selected Answer:</strong> ${selectedText}`;
     const isIncorrect = selectedText !== 'None' && selectedText !== q.correct;
     if (isIncorrect) {
       
@@ -333,7 +333,7 @@ function renderReview(section) {
     qReview.appendChild(selectedAnswerP);
 
     const correct = document.createElement("p");
-    correct.innerHTML = `<strong>Correct Answer:</strong> ${q.correct}`;
+    correct.innerHTML = `✅ <strong>Correct Answer:</strong> ${q.correct}`;
     if (isIncorrect) {
       
       correct.style.fontWeight = 'bold';
