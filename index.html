@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WGU: D089 Principles of Economics OA Exam Quiz</title>
+  <title id="page-title">Loading...</title>
   <style>
     body {
       font-family: Futura, 'Trebuchet MS', Arial, sans-serif;
@@ -101,7 +101,7 @@
   </style>
 </head>
 <body>
-  <h1>📘 WGU: D089 Principles of Economics OA Exam Quiz 📘</h1>
+  <h1 id="quiz-title">📘 Loading Quiz Title... 📘</h1>
   <div id="start-container" style="text-align:center; margin-top: 50px;">
     <button id="start-button" style="background-color:#003058;color:white;padding:12px 24px;font-size:1.2rem;border:none;border-radius:8px;cursor:pointer;box-shadow:2px 2px 6px rgba(0,0,0,0.2);">Start Exam</button>
   </div>
@@ -133,8 +133,12 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("quiz").style.display = "block";
       document.getElementById("progress-container").style.display = "block";
 
-      fetch('quiz-data.json')
+     fetch('quiz-data.json')
         .then(response => response.json())
+        .then(data => {
+          if (data.title) {
+            document.title = `WGU: ${data.title} OA Prep Exam`;
+            document.getElementById('quiz-title').innerText = `📘 WGU: ${data.title} OA Prep Exam 📘`;
         .then(data => {
           initializeQuiz(data);
           showSection(0);
